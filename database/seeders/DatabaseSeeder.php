@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
 
         // Daftar nama kelompok + url grup
      $kelompokData = [
-            ['nama_kelompok' => 'Atreides', 'url_grub' => 'https://chat.whatsapp.com/GIg1XxjpWIwBeB9GMitFtE?s=cl&p=a&mlu=4'],
-            ['nama_kelompok' => 'Harkonnen', 'url_grub' => 'https://chat.whatsapp.com/Llw3KVnw9nqKkwJB4YOQvs?s=cl&p=a&mlu=4'],
-            ['nama_kelompok' => 'Corinno', 'url_grub' => 'https://chat.whatsapp.com/IDFc84TTGBq8V09hBfj56z?s=cl&p=a&mlu=4'],
+            ['nama_kelompok' => 'Atreides', 'url_grub' => 'https://chat.whatsapp.com/Llw3KVnw9nqKkwJB4YOQvs?s=cl&p=a&mlu=4'],
+            ['nama_kelompok' => 'Harkonnen', 'url_grub' => 'https://chat.whatsapp.com/GIg1XxjpWIwBeB9GMitFtE?s=cl&p=a&mlu=4'],
+            ['nama_kelompok' => 'Corrino', 'url_grub' => 'https://chat.whatsapp.com/IDFc84TTGBq8V09hBfj56z?s=cl&p=a&mlu=4'],
             ['nama_kelompok' => 'Vernius', 'url_grub' => 'https://chat.whatsapp.com/HiB1D8zPrht8r0JSg4f0R5?s=cl&p=a&mlu=4'],
             ['nama_kelompok' => 'Richese', 'url_grub' => 'https://chat.whatsapp.com/KWDU8egEu0CL1XwDC1OZBx?s=cl&p=a&mlu=4'],
             ['nama_kelompok' => 'Ginaz', 'url_grub' => 'https://chat.whatsapp.com/BGoNbkEFYEqHtxd9LyQyy7?s=cl&p=a&mlu=4'],

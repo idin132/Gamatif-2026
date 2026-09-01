@@ -116,7 +116,7 @@
                 @if(!$peserta->kelompok)
                     <div id="gacha-action-container">
                         <p class="text-xs text-zinc-400 mb-6">Penentuan House dilakukan secara acak oleh Sorting Protocol
-                            Arrakis. Tekan tombol untuk mengundi House Anda.</p>
+                            Gamatif. Tekan tombol untuk mengundi House Anda.</p>
 
                         <!-- Display Animasi Gacha -->
                         <div

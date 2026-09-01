@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $pengaturan->nama_kegiatan ?? 'GAMATIF 2026' }} - Arrakis Expedition</title>
+    <title>{{ $pengaturan->nama_kegiatan ?? 'GAMATIF 2026' }} - Gamatif Expedition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -175,7 +175,7 @@
                     <a href="{{ $sm->url }}" target="_blank" class="hover:text-spice-400 transition">{{ $sm->nama }}</a>
                 @endforeach
             </div>
-            <p class="text-xs text-zinc-600">Arrakis Expedition &copy; 2026. All rights reserved.</p>
+            <p class="text-xs text-zinc-600">Gamatif Expedition &copy; 2026. All rights reserved.</p>
         </div>
     </footer>
 
