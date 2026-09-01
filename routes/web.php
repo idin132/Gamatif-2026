@@ -24,6 +24,7 @@ Route::middleware('auth:peserta')->prefix('portal')->name('peserta.')->group(fun
     Route::post('/ajukan-izin', [DashboardController::class, 'ajukanIzin'])->name('ajukan_izin');
     Route::post('/kirim-menfess', [DashboardController::class, 'kirimMenfess'])->name('kirim_menfess');
     Route::post('/logout', [PesertaAuthController::class, 'logout'])->name('logout');
+    Route::post('/gacha-kelompok', [DashboardController::class, 'gachaKelompok'])->name('gacha_kelompok');
 });
 
 Route::redirect('/login-admin', '/admin/login')->name('login');

@@ -15,6 +15,7 @@ use App\Models\KetuaAngkatan;
 use App\Models\KritikSaran;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Hash;
+use App\Models\MahasiswaBaru;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -145,5 +146,54 @@ class DashboardController extends Controller
         $peserta->save();
 
         return back()->with('success', 'Profil berhasil diperbarui!');
+    }
+
+    public function gachaKelompok(Request $request)
+    {
+        $peserta = auth()->guard('peserta')->user();
+
+        if ($peserta->kelompok_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda sudah memiliki House!',
+            ], 400);
+        }
+
+        // Eksekusi penentuan kelompok dengan lock transaksi agar anti-bentrok
+        $assignedKelompok = DB::transaction(function () use ($peserta) {
+            $gender = $peserta->jenis_kelamin;
+
+            // Ambil kelompok yang memiliki anggota dengan gender yang sama paling sedikit
+            $kelompok = Kelompok::withCount([
+                'mahasiswaBarus as same_gender_count' => function ($query) use ($gender) {
+                    $query->where('jenis_kelamin', $gender);
+                },
+                'mahasiswaBarus as total_count'
+            ])
+                ->lockForUpdate()
+                ->orderBy('same_gender_count', 'asc') // Prioritaskan gender paling sedikit
+                ->orderBy('total_count', 'asc')       // Jika seri, prioritaskan total terkecil
+                ->inRandomOrder()                     // Acak jika ada lebih dari 1 kelompok dengan jumlah sama persis
+                ->first();
+
+            if (!$kelompok) {
+                throw new \Exception('Data kelompok belum tersedia di sistem.');
+            }
+
+            $peserta->update([
+                'kelompok_id' => $kelompok->id,
+            ]);
+
+            return $kelompok;
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'kelompok' => [
+                'id' => $assignedKelompok->id,
+                'nama' => $assignedKelompok->nama_kelompok,
+                'url_grub' => $assignedKelompok->url_grub,
+            ],
+        ]);
     }
 }
