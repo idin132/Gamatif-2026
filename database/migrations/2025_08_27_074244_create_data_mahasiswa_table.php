@@ -13,32 +13,35 @@ return new class extends Migration
     {
         Schema::create('data_mahasiswa', function (Blueprint $table) {
             $table->id();
-    $table->string('nim')->unique(); // atau $table->foreignId('nim'); kalau mau FK ke tabel lain
-    $table->string('nama');
-  $table->foreignId('kelompok_id')
-      ->constrained('kelompoks', 'id'); // otomatis FK ke tabel kelompok(id)
-            $table->string('day_1')->default(false);
-            $table->string('day_2')->default(false);
-            $table->string('day_3')->default(false);
-            $table->string('barang_1_day_1')->default(false);
-            $table->string('barang_2_day_1')->default(false);
-            $table->string('barang_3_day_1')->default(false);
-            $table->string('barang_4_day_1')->default(false);
-            $table->string('barang_5_day_1')->default(false);
+            $table->string('nim')->unique();
+            $table->string('nama');
+            $table->foreignId('kelompok_id')->constrained('kelompoks', 'id');
 
-            $table->string('barang_1_day_2')->default(false);
-            $table->string('barang_2_day_2')->default(false);
-            $table->string('barang_3_day_2')->default(false);
-            $table->string('barang_4_day_2')->default(false);
-            $table->string('barang_5_day_2')->default(false);
+            // Absensi Kehadiran
+            $table->boolean('day_1')->default(false);
+            $table->boolean('day_2')->default(false);
+            $table->boolean('day_3')->default(false);
 
-            $table->string('barang_1_day_3')->default(false);
-            $table->string('barang_2_day_3')->default(false);
-            $table->string('barang_3_day_3')->default(false);
-            $table->string('barang_4_day_3')->default(false);
-            $table->string('barang_5_day_3')->default(false);
-        
-  
+            // Hari 1
+            $table->boolean('makanan_berat_day_1')->default(false);
+            $table->boolean('susu_superhero_day_1')->default(false); // Ultramilk
+            $table->boolean('raja_dangdut_day_1')->default(false);   // Roma
+            $table->boolean('snack_rindu_day_1')->default(false);    // Dilan
+            $table->boolean('wafer_terkenal_day_1')->default(false); // Superstar
+
+            // Hari 2
+            $table->boolean('makanan_berat_day_2')->default(false);
+            $table->boolean('susu_monyet_day_2')->default(false);        // Nobo
+            $table->boolean('roti_ketawa_day_2')->default(false);        // Aoka
+            $table->boolean('cokelat_berjerawat_day_2')->default(false); // Beng-Beng
+            $table->boolean('bintang_selanjutnya_day_2')->default(false);// Nextar
+
+            // Hari 3
+            $table->boolean('makanan_berat_day_3')->default(false);
+            $table->boolean('biskuit_3_cara_day_3')->default(false);      // Oreo
+            $table->boolean('air_keringat_atlet_day_3')->default(false);  // Pocari Sweat
+            $table->boolean('susu_puncak_day_3')->default(false);         // Cimory
+            $table->boolean('stik_sayuran_day_3')->default(false);        // Biskitop Vegetable
 
             $table->timestamps();
         });

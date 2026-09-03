@@ -27,7 +27,7 @@ class KelompokResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('nama_kelompok')
-                    ->label('Nama Kelompok / House')
+                    ->label('Nama Kelompok')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('url_grub')
