@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MahasiswaBaruResource\Pages;
 use App\Models\MahasiswaBaru;
+use App\Mail\MabaAccNotification;
+use Illuminate\Support\Facades\Mail;
+use Filament\Notifications\Notification;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -84,18 +87,18 @@ class MahasiswaBaruResource extends Resource
                         Forms\Components\Select::make('kelompok_id')
                             ->label('House / Kelompok')
                             ->relationship('kelompok', 'nama_kelompok')
-                            ->disabled(fn () => auth()->user()?->isPk()),
+                            ->disabled(fn() => auth()->user()?->isPk()),
                         Forms\Components\TextInput::make('password')
                             ->label('Password Akun Peserta')
                             ->password()
-                            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                            ->dehydrated(fn ($state) => filled($state))
-                            ->required(fn (string $context): bool => $context === 'create')
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                            ->dehydrated(fn($state) => filled($state))
+                            ->required(fn(string $context): bool => $context === 'create')
                             ->maxLength(255),
                         Forms\Components\Toggle::make('status')
                             ->label('Terverifikasi (ACC)')
                             ->default(false)
-                            ->visible(fn () => auth()->user()?->isAdmin()),
+                            ->visible(fn() => auth()->user()?->isAdmin()),
                     ]),
 
                 Forms\Components\Section::make('Berkas Pendaftaran')
@@ -104,13 +107,13 @@ class MahasiswaBaruResource extends Resource
                         Forms\Components\FileUpload::make('bukti_registrasi')
                             ->label('Bukti Registrasi')
                             ->directory('bukti_registrasi')
-                            ->required(fn (string $context): bool => $context === 'create')
+                            ->required(fn(string $context): bool => $context === 'create')
                             ->openable(),
                         Forms\Components\FileUpload::make('bukti_sosmed')
                             ->label('Bukti Follow Media Sosial')
                             ->multiple()
                             ->directory('bukti_sosmed')
-                            ->required(fn (string $context): bool => $context === 'create')
+                            ->required(fn(string $context): bool => $context === 'create')
                             ->openable(),
                     ]),
             ]);
@@ -130,17 +133,42 @@ class MahasiswaBaruResource extends Resource
                 Tables\Filters\TernaryFilter::make('status')->label('Status Verifikasi'),
                 Tables\Filters\SelectFilter::make('kelompok_id')
                     ->relationship('kelompok', 'nama_kelompok')
-                    ->visible(fn () => auth()->user()?->isAdmin()),
+                    ->visible(fn() => auth()->user()?->isAdmin()),
             ])
             ->actions([
-                Action::make('acc')
-                    ->label('ACC')
-                    ->icon('heroicon-o-check-badge')
-                    ->color('success')
-                    ->visible(fn (MahasiswaBaru $record) => !$record->status && auth()->user()?->isAdmin())
-                    ->requiresConfirmation()
-                    ->action(fn (MahasiswaBaru $record) => $record->update(['status' => 1])),
+                // Action::make('acc')
+                //     ->label('ACC')
+                //     ->icon('heroicon-o-check-badge')
+                //     ->color('success')
+                //     ->visible(fn(MahasiswaBaru $record) => !$record->status && auth()->user()?->isAdmin())
+                //     ->requiresConfirmation()
+                //     ->action(fn(MahasiswaBaru $record) => $record->update(['status' => 1])),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('acc')
+                    ->label('ACC')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn($record) => $record->status == 0)
+                    ->requiresConfirmation()
+                    ->modalHeading('Verifikasi Mahasiswa Baru')
+                    ->modalDescription('Apakah Anda yakin ingin menyetujui akun maba ini? Email notifikasi akan dikirim secara otomatis.')
+                    ->action(function ($record) {
+                        $record->update(['status' => 1]);
+
+                        // Kirim email notifikasi
+                        if (filter_var($record->email, FILTER_VALIDATE_EMAIL)) {
+                            try {
+                                Mail::to($record->email)->send(new MabaAccNotification($record));
+                            } catch (\Exception $e) {
+                                // Biarkan tetap sukses walau email offline/gagal
+                            }
+                        }
+
+                        Notification::make()
+                            ->title('Maba Berhasil di-ACC & Email Terkirim')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -148,9 +176,9 @@ class MahasiswaBaruResource extends Resource
                         ->label('ACC Terpilih')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->visible(fn () => auth()->user()?->isAdmin())
-                        ->action(fn (Collection $records) => $records->each->update(['status' => 1])),
-                    Tables\Actions\DeleteBulkAction::make()->visible(fn () => auth()->user()?->isAdmin()),
+                        ->visible(fn() => auth()->user()?->isAdmin())
+                        ->action(fn(Collection $records) => $records->each->update(['status' => 1])),
+                    Tables\Actions\DeleteBulkAction::make()->visible(fn() => auth()->user()?->isAdmin()),
                 ]),
             ]);
     }

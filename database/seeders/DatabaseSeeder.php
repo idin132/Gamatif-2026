@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
         $mahasiswaData = [
             ['nim' => '10001', 'nama' => 'Atreides', 'nama_kelompok' => 'Atreides'],
             ['nim' => '10002', 'nama' => 'Harkonnen', 'nama_kelompok' => 'Harkonnen'],
-            ['nim' => '10003', 'nama' => 'Corinno', 'nama_kelompok' => 'Corinno'],
+            ['nim' => '10003', 'nama' => 'Corrino', 'nama_kelompok' => 'Corrino'],
             ['nim' => '10004', 'nama' => 'Vernius', 'nama_kelompok' => 'Vernius'],
             ['nim' => '10005', 'nama' => 'Richese', 'nama_kelompok' => 'Richese'],
             ['nim' => '10006', 'nama' => 'Ginaz', 'nama_kelompok' => 'Ginaz'],

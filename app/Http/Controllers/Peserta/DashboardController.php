@@ -8,6 +8,7 @@ use App\Models\JadwalKegiatan;
 use App\Models\PengaturanWeb;
 use App\Models\SosialMedia;
 use App\Models\IzinKehadiran;
+use App\Models\DataMahasiswa;
 use App\Models\Menfess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -159,11 +160,10 @@ class DashboardController extends Controller
             ], 400);
         }
 
-        // Eksekusi penentuan kelompok dengan lock transaksi agar anti-bentrok
         $assignedKelompok = DB::transaction(function () use ($peserta) {
             $gender = $peserta->jenis_kelamin;
 
-            // Ambil kelompok yang memiliki anggota dengan gender yang sama paling sedikit
+            // Cari kelompok dengan gender yang sama paling sedikit agar seimbang
             $kelompok = Kelompok::withCount([
                 'mahasiswaBarus as same_gender_count' => function ($query) use ($gender) {
                     $query->where('jenis_kelamin', $gender);
@@ -171,18 +171,50 @@ class DashboardController extends Controller
                 'mahasiswaBarus as total_count'
             ])
                 ->lockForUpdate()
-                ->orderBy('same_gender_count', 'asc') // Prioritaskan gender paling sedikit
-                ->orderBy('total_count', 'asc')       // Jika seri, prioritaskan total terkecil
-                ->inRandomOrder()                     // Acak jika ada lebih dari 1 kelompok dengan jumlah sama persis
+                ->orderBy('same_gender_count', 'asc')
+                ->orderBy('total_count', 'asc')
+                ->inRandomOrder()
                 ->first();
 
             if (!$kelompok) {
                 throw new \Exception('Data kelompok belum tersedia di sistem.');
             }
 
+            // 1. Simpan kelompok ke profil maba
             $peserta->update([
                 'kelompok_id' => $kelompok->id,
             ]);
+
+            // 2. OTOMATIS GENERATE DATA CHECKLIST 3 HARI DI TABEL data_mahasiswa
+            DataMahasiswa::updateOrCreate(
+                ['nim' => $peserta->nim],
+                [
+                    'nama' => $peserta->nama_lengkap,
+                    'kelompok_id' => $kelompok->id,
+                    // Status kehadiran awal (0 = belum hadir/alfa)
+                    'day_1' => '0',
+                    'day_2' => '0',
+                    'day_3' => '0',
+                    // Default barang bawaan Day 1 - Day 3 tersetel ke '0'
+                    'makanan_berat_day_1' => '1',
+                    'susu_superhero_day_1' => '1',
+                    'raja_dangdut_day_1' => '1',
+                    'snack_rindu_day_1' => '1',
+                    'wafer_terkenal_day_1' => '1',
+
+                    'makanan_berat_day_2' => '1',
+                    'susu_monyet_day_2' => '1',
+                    'roti_ketawa_day_2' => '1',
+                    'cokelat_berjerawat_day_2' => '1',
+                    'bintang_selanjutnya_day_2' => '1',
+
+                    'makanan_berat_day_3' => '1',
+                    'biskuit_3_cara_day_3' => '1',
+                    'air_keringat_atlet_day_3' => '1',
+                    'susu_puncak_day_3' => '1',
+                    'stik_sayuran_day_3' => '1',
+                ]
+            );
 
             return $kelompok;
         });
