@@ -49,7 +49,7 @@
 
         <!-- Auth -->
         <div class="flex items-center gap-4">
-            <a href="{{ route('login') }}"
+            <a href="{{ route('peserta.login') }}"
                class="text-sm font-semibold text-white hover:text-white/80 transition">
                 Masuk
             </a>
