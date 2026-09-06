@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Route;
 
 // 1. Landing Page Utama
 Route::get('/', [DashboardController::class, 'landingPage'])->name('landing');
+Route::get('/menfess', [DashboardController::class, 'menfessPage'])->name('menfess');
 Route::post('/kirim-kritik-saran', [DashboardController::class, 'kirimKritikSaran'])->name('kirim_kritik_saran');
+Route::post('/kirim-menfess', [DashboardController::class, 'kirimMenfess'])->name('kirim_menfess');
 
 // 2. Auth Peserta (Guest)
 Route::middleware('guest:peserta')->prefix('portal')->name('peserta.')->group(function () {
@@ -21,7 +23,9 @@ Route::middleware('guest:peserta')->prefix('portal')->name('peserta.')->group(fu
 // 3. Portal Dashboard Peserta (Auth)
 Route::middleware('auth:peserta')->prefix('portal')->name('peserta.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/update-profil', [DashboardController::class, 'updateProfil'])->name('update_profil'); // <-- Baru
+    Route::get('/profil', [DashboardController::class, 'profil'])->name('profil');
+    Route::get('/absensi', [DashboardController::class, 'absensi'])->name('absensi');
+    Route::post('/update-profil', [DashboardController::class, 'updateProfil'])->name('update_profil');
     Route::post('/pilih-kelompok', [DashboardController::class, 'pilihKelompok'])->name('pilih_kelompok');
     Route::post('/ajukan-izin', [DashboardController::class, 'ajukanIzin'])->name('ajukan_izin');
     Route::post('/kirim-menfess', [DashboardController::class, 'kirimMenfess'])->name('kirim_menfess');

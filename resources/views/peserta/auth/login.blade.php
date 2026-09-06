@@ -1,32 +1,71 @@
 @extends('layouts.peserta')
 
+@section('title', 'Masuk - Portal Peserta GAMATIF 2026')
+
 @section('content')
-<div class="max-w-md mx-auto bg-sandcard border border-zinc-700 p-8 rounded-2xl shadow-2xl mt-8">
-    <div class="text-center mb-6">
-        <h1 class="text-2xl font-black tracking-wider text-spice-400">PORTAL PESERTA</h1>
-        <p class="text-xs text-zinc-400 mt-1">Masuk dengan NIM dan password yang terdaftar</p>
+<div class="min-h-[70vh] flex items-center justify-center py-8">
+    <div class="w-full max-w-xs sm:max-w-sm">
+
+        <!-- header -->
+        <div class="text-center mb-6">
+            <p class="section-label mb-2">Portal Peserta</p>
+            <h1 class="font-cinzel text-xl font-bold text-white tracking-wide">Masuk</h1>
+            <p class="text-xs text-zinc-500 mt-1.5">Gunakan NIM dan password yang terdaftar</p>
+        </div>
+
+        <div class="card-glass mobile-card rounded-lg p-5 sm:p-6">
+
+            @if($errors->any())
+                <div class="mb-5 px-4 py-3 rounded-sm bg-rose-950/60 border border-rose-700/60 text-rose-300 text-xs space-y-1">
+                    @foreach($errors->all() as $error)
+                        <p>• {{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('peserta.login.post') }}" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label class="section-label block mb-1.5">NIM</label>
+                    <input type="text" name="nim" value="{{ old('nim') }}" required
+                           placeholder="Masukkan NIM Anda"
+                           class="input-glass rounded-sm">
+                </div>
+
+                <div>
+                    <label class="section-label block mb-1.5">Password</label>
+                    <input type="password" name="password" required
+                           placeholder="••••••••"
+                           class="input-glass rounded-sm">
+                </div>
+
+                <div class="pt-1">
+                    <button type="submit" class="btn-glass w-full py-2.5 rounded-sm">
+                        Masuk ke Portal
+                    </button>
+                </div>
+            </form>
+
+            <div class="divider-gold my-4"></div>
+
+            <p class="text-center text-xs text-zinc-500">
+                Belum mendaftar?
+                <a href="{{ route('peserta.register') }}"
+                   class="text-gold-400 hover:text-gold-300 transition font-semibold">
+                    Registrasi Akun Baru
+                </a>
+            </p>
+
+        </div>
+
+        <p class="text-center mt-6">
+            <a href="{{ route('landing') }}"
+               class="section-label text-zinc-300 hover:text-gold-400 transition">
+                ← Kembali ke Beranda
+            </a>
+        </p>
+
     </div>
-
-    <form method="POST" action="{{ route('peserta.login.post') }}" class="space-y-4">
-        @csrf
-        <div>
-            <label class="block text-xs font-semibold text-zinc-300 mb-1">NIM</label>
-            <input type="text" name="nim" value="{{ old('nim') }}" required class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-spice-500">
-            @error('nim') <span class="text-xs text-rose-400 mt-1">{{ $message }}</span> @enderror
-        </div>
-
-        <div>
-            <label class="block text-xs font-semibold text-zinc-300 mb-1">Password</label>
-            <input type="password" name="password" required class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-spice-500">
-        </div>
-
-        <button type="submit" class="w-full bg-spice-500 hover:bg-spice-600 text-black font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-amber-500/20">
-            Masuk ke Portal
-        </button>
-    </form>
-
-    <p class="text-center text-xs text-zinc-400 mt-6">
-        Belum mendaftar? <a href="{{ route('peserta.register') }}" class="text-spice-400 hover:underline">Registrasi Akun Baru</a>
-    </p>
 </div>
 @endsection

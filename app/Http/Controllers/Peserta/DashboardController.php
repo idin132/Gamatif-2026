@@ -33,6 +33,15 @@ class DashboardController extends Controller
         return view('landing', compact('pengaturan', 'jadwals', 'calonKetua', 'sosmed', 'menfesses'));
     }
 
+    public function menfessPage()
+    {
+        $pengaturan = PengaturanWeb::first();
+        $sosmed = SosialMedia::all();
+        $menfesses = Menfess::latest()->get();
+
+        return view('menfess', compact('pengaturan', 'sosmed', 'menfesses'));
+    }
+
     public function kirimKritikSaran(Request $request)
     {
         $request->validate([
@@ -55,18 +64,12 @@ class DashboardController extends Controller
         $pengaturan = PengaturanWeb::first();
         $sosmed = SosialMedia::all();
 
-        // Rekap absensi khusus mahasiswa yang sedang login
-        $riwayatAbsensi = Absensi::with('jadwalKegiatan')
-            ->where('mahasiswa_baru_id', $peserta->id)
-            ->get();
-
         return view('peserta.dashboard', compact(
             'peserta',
             'kelompoks',
             'jadwals',
             'pengaturan',
-            'sosmed',
-            'riwayatAbsensi'
+            'sosmed'
         ));
     }
 
@@ -122,7 +125,29 @@ class DashboardController extends Controller
 
         Menfess::create($request->only('from', 'to', 'message'));
 
-        return back()->with('success', 'Pesan menfess berhasil dikirim!');
+        return redirect(route('menfess') . '#top')->with('menfess_success', 'Menfess berhasil dikirim!');
+    }
+
+    public function absensi()
+    {
+        $peserta = Auth::guard('peserta')->user();
+        $pengaturan = PengaturanWeb::first();
+        $sosmed = SosialMedia::all();
+
+        $riwayatAbsensi = Absensi::with('jadwalKegiatan')
+            ->where('mahasiswa_baru_id', $peserta->id)
+            ->get();
+
+        return view('peserta.absensi', compact('peserta', 'pengaturan', 'sosmed', 'riwayatAbsensi'));
+    }
+
+    public function profil()
+    {
+        $peserta = Auth::guard('peserta')->user();
+        $pengaturan = PengaturanWeb::first();
+        $sosmed = SosialMedia::all();
+
+        return view('peserta.profil', compact('peserta', 'pengaturan', 'sosmed'));
     }
 
     public function updateProfil(Request $request)

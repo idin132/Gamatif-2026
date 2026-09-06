@@ -1,135 +1,130 @@
 @extends('layouts.peserta')
 
+@section('title', 'Registrasi - GAMATIF 2026')
+
 @section('content')
+<div class="py-8">
+    <div class="max-w-xs sm:max-w-sm mx-auto">
 
-<div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl shadow-2xl mt-4">
+        <!-- header -->
+        <div class="text-center mb-6">
+            <p class="section-label mb-2">Pendaftaran Peserta</p>
+            <h1 class="font-cinzel text-xl font-bold text-white tracking-wide">Registrasi</h1>
+            <p class="text-xs text-zinc-500 mt-1.5">Lengkapi data pribadi dan berkas registrasi Anda</p>
+        </div>
 
-    <div class="text-center mb-6">
+        <div class="card-glass mobile-card rounded-lg p-5 sm:p-6">
 
-        <h1 class="text-2xl font-black tracking-wider text-white drop-shadow-[0_3px_4px_rgba(0,0,0,0.35)]">REGISTRASI PESERTA</h1>
+            @if($errors->any())
+                <div class="mb-4 px-4 py-3 rounded-sm bg-rose-950/60 border border-rose-700/60 text-rose-300 text-xs space-y-1">
+                    @foreach($errors->all() as $error)
+                        <p>• {{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
 
-        <p class="text-xs text-white mt-1">Lengkapi data pribadi dan berkas registrasi Anda</p>
+            <form method="POST" action="{{ route('peserta.register.post') }}"
+                  enctype="multipart/form-data" class="space-y-3">
+                @csrf
+
+                <div>
+                    <label class="section-label block mb-1.5">NIM</label>
+                    <input type="text" name="nim" value="{{ old('nim') }}" required
+                           placeholder="Nomor Induk Mahasiswa"
+                           class="input-glass rounded-sm">
+                </div>
+                <div>
+                    <label class="section-label block mb-1.5">Nama Lengkap</label>
+                    <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required
+                           placeholder="Nama sesuai KTP"
+                           class="input-glass rounded-sm">
+                </div>
+                <div>
+                    <label class="section-label block mb-1.5">Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}" required
+                           placeholder="email@example.com"
+                           class="input-glass rounded-sm">
+                </div>
+                <div>
+                    <label class="section-label block mb-1.5">No. WhatsApp</label>
+                    <input type="text" name="nomor_whatsapp" value="{{ old('nomor_whatsapp') }}" required
+                           placeholder="08xxxxxxxxxx"
+                           class="input-glass rounded-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="section-label block mb-1.5">Jenis Kelamin</label>
+                        <select name="jenis_kelamin" required class="input-glass rounded-sm">
+                            <option value="L" class="bg-zinc-900">Laki-laki</option>
+                            <option value="P" class="bg-zinc-900">Perempuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="section-label block mb-1.5">Tanggal Lahir</label>
+                        <input type="date" name="tanggal_lahir" required
+                               class="input-glass rounded-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="section-label block mb-1.5">Alamat Lengkap</label>
+                    <textarea name="alamat" rows="2" required
+                              placeholder="Jalan, RT/RW, Kelurahan, Kota..."
+                              class="input-glass rounded-sm resize-none">{{ old('alamat') }}</textarea>
+                </div>
+                <div>
+                    <label class="section-label block mb-1.5">Password</label>
+                    <input type="password" name="password" required
+                           placeholder="••••••••"
+                           class="input-glass rounded-sm">
+                </div>
+                <div>
+                    <label class="section-label block mb-1.5">Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation" required
+                           placeholder="••••••••"
+                           class="input-glass rounded-sm">
+                </div>
+
+                <div class="pt-2 border-t border-gold-500/10 space-y-3">
+                    <div>
+                        <label class="section-label block mb-1.5">Bukti Registrasi <span class="text-zinc-600 normal-case">(PDF/JPG)</span></label>
+                        <input type="file" name="bukti_registrasi" required
+                               class="w-full text-xs text-zinc-400
+                                      file:mr-3 file:py-1.5 file:px-3 file:rounded-sm file:border-0
+                                      file:text-xs file:font-semibold file:tracking-widest file:uppercase
+                                      file:bg-gold-500/15 file:text-gold-400
+                                      hover:file:bg-gold-500/25 transition">
+                    </div>
+                    <div>
+                        <label class="section-label block mb-1.5">Bukti Sosmed <span class="text-zinc-600 normal-case">(Bisa Multiple)</span></label>
+                        <input type="file" name="bukti_sosmed[]" multiple required
+                               class="w-full text-xs text-zinc-400
+                                      file:mr-3 file:py-1.5 file:px-3 file:rounded-sm file:border-0
+                                      file:text-xs file:font-semibold file:tracking-widest file:uppercase
+                                      file:bg-gold-500/15 file:text-gold-400
+                                      hover:file:bg-gold-500/25 transition">
+                    </div>
+                </div>
+
+                <div class="pt-1">
+                    <button type="submit" class="btn-glass w-full py-2.5 rounded-sm">
+                        Daftar Sekarang
+                    </button>
+                </div>
+
+            </form>
+
+            <div class="divider-gold my-4"></div>
+
+            <p class="text-center text-xs text-zinc-500">
+                Sudah punya akun?
+                <a href="{{ route('peserta.login') }}"
+                   class="text-gold-400 hover:text-gold-300 transition font-semibold">
+                    Masuk ke Portal
+                </a>
+            </p>
+
+        </div>
 
     </div>
-
-    <form method="POST" action="{{ route('peserta.register.post') }}" enctype="multipart/form-data" class="space-y-4">
-
-        @csrf
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">NIM</label>
-
-                <input type="text" name="nim" value="{{ old('nim') }}" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-
-            </div>
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">Nama Lengkap</label>
-
-                <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-
-            </div>
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">Email</label>
-
-                <input type="email" name="email" value="{{ old('email') }}" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-
-            </div>
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">No. WhatsApp</label>
-
-                <input type="text" name="nomor_whatsapp" value="{{ old('nomor_whatsapp') }}" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-
-            </div>
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">Jenis Kelamin</label>
-
-                <select name="jenis_kelamin" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-
-                    <option value="L" class="bg-[#ACAC81] text-white">Laki-laki</option>
-
-                    <option value="P" class="bg-[#ACAC81] text-white">Perempuan</option>
-
-                </select>
-
-            </div>
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">Tanggal Lahir</label>
-
-                <input type="date" name="tanggal_lahir" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-
-            </div>
-
-        </div>
-
-        <div>
-
-            <label class="block text-xs font-semibold text-white mb-1">Alamat Lengkap</label>
-
-            <textarea name="alamat" rows="2" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">{{ old('alamat') }}</textarea>
-
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">Password</label>
-
-                <input type="password" name="password" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-
-            </div>
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">Konfirmasi Password</label>
-
-                <input type="password" name="password_confirmation" required class="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-
-            </div>
-
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">Bukti Registrasi (PDF/JPG)</label>
-
-                <input type="file" name="bukti_registrasi" required class="w-full text-xs text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-white/20 file:text-white">
-
-            </div>
-
-            <div>
-
-                <label class="block text-xs font-semibold text-white mb-1">Bukti Sosmed (Bisa Multiple)</label>
-
-                <input type="file" name="bukti_sosmed[]" multiple required class="w-full text-xs text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-white/20 file:text-white">
-
-            </div>
-
-        </div>
-
-        <button type="submit" class="w-full mt-4 bg-[#4A4032]/80 hover:bg-[#3B3328]/90 backdrop-blur-md border border-[#6B674D]/70 text-[#F5F0D8] font-extrabold py-2.5 rounded-lg transition text-sm shadow-xl shadow-black/20 hover:shadow-[#E8D7A0]/50">
-
-            Daftar Sekarang
-
-        </button>
-
-    </form>
-
 </div>
-
 @endsection

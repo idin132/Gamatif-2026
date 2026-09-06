@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->redirectGuestsTo(fn () => route('peserta.login'));
+        $middleware->redirectTo(
+            guests: fn (\Illuminate\Http\Request $request) => route('peserta.login'),
+            users: fn (\Illuminate\Http\Request $request) => route('peserta.dashboard'),
+        );
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
