@@ -46,22 +46,38 @@ class PkPortalController extends Controller
         $kelompokId = $user->kelompok_id;
         $kelompok = $user->kelompok;
 
-        $mabas = MahasiswaBaru::where('kelompok_id', $kelompokId)->get();
-        $dataMahasiswas = DataMahasiswa::where('kelompok_id', $kelompokId)->get();
+        // 1. Ambil daftar jadwal/agenda kegiatan (urutkan tanggal/id untuk mapping Day 1, Day 2, Day 3)
         $jadwals = JadwalKegiatan::orderBy('tanggal', 'asc')->get();
-        $izinList = IzinKehadiran::whereIn('mahasiswa_baru_id', $mabas->pluck('id'))->latest()->get();
 
-        // AMBIL DATA DARI TABEL NAMA BARANG BAWAANS (urutkan berdasarkan id)
+        // 2. Ambil maba kelompok ini beserta riwayat absensinya
+        $mabas = MahasiswaBaru::where('kelompok_id', $kelompokId)
+            ->with([
+                'absensis' => function ($q) use ($kelompokId) {
+                    $q->where('kelompok_id', $kelompokId);
+                }
+            ])
+            ->get();
+
+        // 3. Data pendukung barang bawaan & izin
+        $dataMahasiswas = DataMahasiswa::where('kelompok_id', $kelompokId)->get();
+        $izinList = \App\Models\IzinKehadiran::whereIn('mahasiswa_baru_id', $mabas->pluck('id'))->latest()->get();
+        $barangColumns = $this->getBarangColumns();
         $masterBarang = [
             'day_1' => NamaBarangBawaan::where('hari', 'day_1')->orderBy('id', 'asc')->pluck('nama_barang')->toArray(),
             'day_2' => NamaBarangBawaan::where('hari', 'day_2')->orderBy('id', 'asc')->pluck('nama_barang')->toArray(),
             'day_3' => NamaBarangBawaan::where('hari', 'day_3')->orderBy('id', 'asc')->pluck('nama_barang')->toArray(),
         ];
 
-        // Kirim mapping kolom ke view
-        $barangColumns = $this->getBarangColumns();
-
-        return view('pk.dashboard', compact('user', 'kelompok', 'mabas', 'dataMahasiswas', 'jadwals', 'izinList', 'barangColumns', 'masterBarang'));
+        return view('pk.dashboard', compact(
+            'user',
+            'kelompok',
+            'mabas',
+            'dataMahasiswas',
+            'jadwals',
+            'izinList',
+            'barangColumns',
+            'masterBarang'
+        ));
     }
 
     public function toggleBarang(Request $request)
@@ -93,21 +109,37 @@ class PkPortalController extends Controller
 
     public function updateKehadiran(Request $request)
     {
-        $request->validate([
-            'id' => 'required|exists:data_mahasiswa,id',
-            'day' => 'required|in:day_1,day_2,day_3',
-            'status' => 'required|in:0,1,2',
-        ]);
+        try {
+            $request->validate([
+                'mahasiswa_baru_id' => 'required|exists:mahasiswa_baru,id',
+                'jadwal_kegiatan_id' => 'required|exists:jadwal_kegiatan,id',
+                'status' => 'required|in:hadir,telat,izin,sakit,alpa',
+            ]);
 
-        $data = DataMahasiswa::where('id', $request->id)
-            ->where('kelompok_id', Auth::user()->kelompok_id)
-            ->firstOrFail();
+            $user = Auth::user();
 
-        $day = $request->day;
-        $data->$day = $request->status;
-        $data->save();
+            // Update atau buat record absensi
+            $absensi = Absensi::updateOrCreate(
+                [
+                    'mahasiswa_baru_id' => $request->mahasiswa_baru_id,
+                    'jadwal_kegiatan_id' => $request->jadwal_kegiatan_id,
+                ],
+                [
+                    'kelompok_id' => $user->kelompok_id,
+                    'status' => $request->status,
+                ]
+            );
 
-        return response()->json(['status' => 'success']);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Status kehadiran berhasil diperbarui',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function storeIzin(Request $request)

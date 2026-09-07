@@ -35,22 +35,19 @@ class AbsensiResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $user = auth()->user();
         return $form
             ->schema([
                 Forms\Components\Select::make('mahasiswa_baru_id')
-                    ->label('Mahasiswa Baru')
-                    ->relationship('mahasiswaBaru', 'nama_lengkap', function (Builder $query) use ($user) {
-                        if ($user && $user->isPk()) {
-                            return $query->where('kelompok_id', $user->kelompok_id);
-                        }
-                        return $query;
-                    })
+                    ->relationship('mahasiswaBaru', 'nama_lengkap')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('kelompok_id')
+                    ->relationship('kelompok', 'nama_kelompok')
                     ->searchable()
                     ->preload()
                     ->required(),
                 Forms\Components\Select::make('jadwal_kegiatan_id')
-                    ->label('Jadwal Kegiatan')
                     ->relationship('jadwalKegiatan', 'nama')
                     ->required(),
                 Forms\Components\Select::make('status')
@@ -61,7 +58,6 @@ class AbsensiResource extends Resource
                         'sakit' => 'Sakit',
                         'alpa' => 'Alpa',
                     ])
-                    ->default('alpa')
                     ->required(),
             ]);
     }
@@ -70,11 +66,28 @@ class AbsensiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('mahasiswaBaru.nim')->label('NIM')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('mahasiswaBaru.nama_lengkap')->label('Nama Mahasiswa')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('mahasiswaBaru.kelompok.nama_kelompok')->label('House')->badge()->color('warning'),
-                Tables\Columns\TextColumn::make('jadwalKegiatan.nama')->label('Kegiatan'),
+                // 1. NIM
+                Tables\Columns\TextColumn::make('mahasiswaBaru.nim')
+                    ->label('NIM')
+                    ->searchable()
+                    ->sortable(),
+
+                // 2. Kelompok (Langsung dari kolom kelompok_id di tabel absensi)
+                Tables\Columns\TextColumn::make('kelompok.nama_kelompok')
+                    ->label('Kelompok')
+                    ->badge()
+                    ->color('warning')
+                    ->searchable()
+                    ->sortable(),
+
+                // 3. Jadwal Kegiatan
+                Tables\Columns\TextColumn::make('jadwalKegiatan.nama')
+                    ->label('Jadwal Kegiatan')
+                    ->sortable(),
+
+                // 4. Status Kehadiran
                 Tables\Columns\SelectColumn::make('status')
+                    ->label('Status')
                     ->options([
                         'hadir' => 'Hadir',
                         'telat' => 'Telat',
@@ -84,17 +97,17 @@ class AbsensiResource extends Resource
                     ]),
             ])
             ->filters([
+                // Filter Kelompok / House
+                Tables\Filters\SelectFilter::make('kelompok_id')
+                    ->label('Filter Berdasarkan Kelompok')
+                    ->relationship('kelompok', 'nama_kelompok')
+                    ->preload(),
+
+                // Filter Kegiatan
                 Tables\Filters\SelectFilter::make('jadwal_kegiatan_id')
+                    ->label('Filter Jadwal Kegiatan')
                     ->relationship('jadwalKegiatan', 'nama')
-                    ->label('Filter Jadwal'),
-                Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'hadir' => 'Hadir',
-                        'telat' => 'Telat',
-                        'izin' => 'Izin',
-                        'sakit' => 'Sakit',
-                        'alpa' => 'Alpa',
-                    ]),
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

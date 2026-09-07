@@ -16,6 +16,11 @@ class absensi extends Model
         return $this->belongsTo(MahasiswaBaru::class, 'mahasiswa_baru_id');
     }
 
+    public function kelompok(): BelongsTo
+    {
+        return $this->belongsTo(Kelompok::class, 'kelompok_id');
+    }
+
     public function jadwalKegiatan(): BelongsTo
     {
         return $this->belongsTo(JadwalKegiatan::class, 'jadwal_kegiatan_id');

@@ -84,9 +84,6 @@ class DataMahasiswaResource extends Resource
                 Tables\Columns\TextColumn::make('nim')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('nama')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('kelompok.nama_kelompok')->badge()->color('warning'),
-                Tables\Columns\TextColumn::make('day_1')->label('Hadir D1')->badge(),
-                Tables\Columns\TextColumn::make('day_2')->label('Hadir D2')->badge(),
-                Tables\Columns\TextColumn::make('day_3')->label('Hadir D3')->badge(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('kelompok_id')

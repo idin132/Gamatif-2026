@@ -23,16 +23,10 @@ class ScanPresensiController extends Controller
             'qr_data' => 'required',
         ]);
 
-        // Decode payload QR
         $payload = json_decode($request->qr_data, true);
-        $mabaId = $payload['id'] ?? null;
+        $mabaId = $payload['id'] ?? (is_numeric($request->qr_data) ? $request->qr_data : null);
 
-        if (!$mabaId) {
-            // Jika isi QR hanya angka ID maba langsung
-            $mabaId = is_numeric($request->qr_data) ? $request->qr_data : null;
-        }
-
-        $maba = MahasiswaBaru::find($mabaId);
+        $maba = MahasiswaBaru::with('kelompok')->find($mabaId);
 
         if (!$maba) {
             return response()->json([
@@ -41,23 +35,30 @@ class ScanPresensiController extends Controller
             ], 404);
         }
 
-        // Simpan / Update ke tabel absensi dengan status otomatis 'hadir'
-        $absensi = Absensi::updateOrCreate(
+        // Ambil kelompok_id dari payload QR atau fallback ke kelompok mahasiswa
+        $kelompokId = $payload['kelompok_id'] ?? $maba->kelompok_id;
+
+        // Simpan ke tabel absensi beserta kelompok_id
+        Absensi::updateOrCreate(
             [
                 'mahasiswa_baru_id' => $maba->id,
                 'jadwal_kegiatan_id' => $request->jadwal_kegiatan_id,
             ],
             [
+                'kelompok_id' => $kelompokId,
                 'status' => 'hadir',
             ]
         );
 
+        $namaKelompok = $maba->kelompok?->nama_kelompok ?? '-';
+
         return response()->json([
             'status' => 'success',
-            'message' => "Absensi berhasil: {$maba->nim} - {$maba->nama_lengkap} (HADIR)",
+            'message' => "Absensi berhasil: {$maba->nim} - {$maba->nama_lengkap} [Kelompok: {$namaKelompok}] (HADIR)",
             'data' => [
                 'nama' => $maba->nama_lengkap,
                 'nim' => $maba->nim,
+                'kelompok' => $namaKelompok,
                 'status' => 'hadir',
             ]
         ]);
