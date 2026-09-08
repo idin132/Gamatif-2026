@@ -10,21 +10,26 @@ class HouseDistributionChart extends BaseWidget
 {
     protected static ?int $sort = 2;
 
-    public static function canView(): bool
-    {
-        return auth()->user()?->isAdmin() ?? false;
-    }
-
     protected function getStats(): array
     {
-        $kelompoks = Kelompok::withCount('mahasiswaBarus')->get();
+        // Ambil semua kelompok beserta hitungan maba dan jenis kelaminnya
+        $kelompoks = Kelompok::withCount([
+            'mahasiswaBarus as total_anggota',
+            'mahasiswaBarus as total_l' => function ($query) {
+                $query->where('jenis_kelamin', 'L');
+            },
+            'mahasiswaBarus as total_p' => function ($query) {
+                $query->where('jenis_kelamin', 'P');
+            },
+        ])->get();
 
         $stats = [];
+
         foreach ($kelompoks as $kelompok) {
-            $stats[] = Stat::make($kelompok->nama_kelompok, $kelompok->mahasiswa_barus_count)
-                ->description('Total anggota')
+            $stats[] = Stat::make($kelompok->nama_kelompok, $kelompok->total_anggota)
+                ->description("L: {$kelompok->total_l} · P: {$kelompok->total_p}")
                 ->descriptionIcon('heroicon-m-user-group')
-                ->color('warning');
+                ->color($kelompok->total_anggota > 0 ? 'warning' : 'gray');
         }
 
         return $stats;

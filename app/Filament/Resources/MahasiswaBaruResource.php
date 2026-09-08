@@ -136,13 +136,6 @@ class MahasiswaBaruResource extends Resource
                     ->visible(fn() => auth()->user()?->isAdmin()),
             ])
             ->actions([
-                // Action::make('acc')
-                //     ->label('ACC')
-                //     ->icon('heroicon-o-check-badge')
-                //     ->color('success')
-                //     ->visible(fn(MahasiswaBaru $record) => !$record->status && auth()->user()?->isAdmin())
-                //     ->requiresConfirmation()
-                //     ->action(fn(MahasiswaBaru $record) => $record->update(['status' => 1])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('acc')
                     ->label('ACC')

@@ -617,9 +617,7 @@
     window.addEventListener('resize', resize);
 })();
 
-/* ═══════════════════════════════════════════════════
-   LOGIKA MODAL
-═══════════════════════════════════════════════════ */
+
 let hmCanClose = true;
 let hmRequested = false;
 
