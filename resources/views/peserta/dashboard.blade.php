@@ -192,10 +192,32 @@
     padding: 2.25rem 2rem 2.5rem;
     text-align: center;
     overflow: hidden;
+    z-index: 2;
     transform: translateY(28px) scale(0.96);
     transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
 }
 #hm-overlay.hm-open #hm-modal { transform: translateY(0) scale(1); }
+#hm-modal.hm-celebration-glow {
+    animation: modalCelebrationGlow 1.1s ease-out both;
+}
+@keyframes modalCelebrationGlow {
+    0% { box-shadow: 0 0 0 rgba(201,168,76,0), 0 32px 80px rgba(0,0,0,0.8); }
+    35% { box-shadow: 0 0 42px rgba(201,168,76,0.38), 0 32px 80px rgba(0,0,0,0.8); }
+    100% { box-shadow: 0 0 18px rgba(201,168,76,0.14), 0 32px 80px rgba(0,0,0,0.8); }
+}
+
+/* ── Celebration fireworks outside the modal ── */
+#hm-celebration-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+#hm-celebration-canvas.active { opacity: 1; }
 
 /* ── Particle canvas (behind everything) ── */
 #hm-canvas {
@@ -406,6 +428,104 @@
     100% { transform: scale(2.5); opacity: 0; }
 }
 
+/* ── Group ticker ── */
+#hm-group-display {
+    min-height: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.35rem 0 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(201,168,76,0.18);
+    background: rgba(201,168,76,0.04);
+    box-shadow: inset 0 0 24px rgba(201,168,76,0.04);
+    transition: border-color 0.5s ease, box-shadow 0.5s ease, transform 0.5s ease;
+}
+#hm-group-display.hm-ticker-suspense {
+    border-color: rgba(201,168,76,0.42);
+    box-shadow: inset 0 0 28px rgba(201,168,76,0.09), 0 0 24px rgba(201,168,76,0.08);
+    animation: tickerPulse 1.1s ease-in-out infinite;
+}
+#hm-group-name {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.05rem, 5vw, 1.55rem);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.25;
+    color: rgba(245,230,200,0.88);
+    text-transform: uppercase;
+    text-shadow: 0 0 18px rgba(201,168,76,0.28);
+    transition: opacity 0.13s ease, transform 0.13s ease, filter 0.13s ease;
+}
+#hm-group-name.hm-ticker-change {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+    filter: blur(2px);
+}
+@keyframes tickerPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.012); }
+}
+
+@keyframes revealFlash {
+    0% { opacity: 0; transform: scale(0.82); }
+    55% { opacity: 1; transform: scale(1.08); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.hm-congrats {
+    color: #F5E6C8;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.35rem, 6vw, 1.9rem);
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-shadow: 0 0 26px rgba(201,168,76,0.5);
+    animation: revealFlash 0.75s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/* ── Pre-gacha suspense ── */
+#hm-suspense-copy {
+    min-height: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    color: #F5E6C8;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.15rem, 5vw, 1.7rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.35;
+    text-shadow: 0 0 22px rgba(201,168,76,0.4);
+    transition: opacity 0.18s ease, transform 0.18s ease, filter 0.18s ease;
+}
+#hm-suspense-copy.hm-suspense-hidden {
+    opacity: 0;
+    transform: scale(0.86);
+    filter: blur(4px);
+}
+#hm-suspense-copy.hm-suspense-countdown {
+    color: #C9A84C;
+    font-size: clamp(2.7rem, 16vw, 5rem);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 32px rgba(201,168,76,0.75);
+    animation: suspenseCountdown 0.45s cubic-bezier(0.16,1,0.3,1) both;
+}
+#hm-suspense-copy.hm-suspense-nervous {
+    animation: suspenseNervous 0.55s ease-in-out both;
+}
+@keyframes suspenseCountdown {
+    0% { opacity: 0; transform: scale(1.45); }
+    60% { opacity: 1; transform: scale(0.96); }
+    100% { opacity: 1; transform: scale(1); }
+}
+@keyframes suspenseNervous {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    25% { transform: translateX(-3px) rotate(-1deg); }
+    75% { transform: translateX(3px) rotate(1deg); }
+}
+
 /* ── Result: house name reveal ── */
 @keyframes houseReveal {
     0%   { opacity:0; transform: scale(0.75) translateY(14px); filter: blur(6px); }
@@ -496,9 +616,21 @@
             <button class="hm-btn" onclick="hmBegin()">UNGKAP HOUSE-MU</button>
         </div>
 
+        {{-- ─── FASE SUSPENSE SEBELUM GACHA ─── --}}
+        <div id="hm-ps" class="hm-phase" style="display:none;">
+            <p class="hm-label">GAMATIF // MOMEN PENENTUAN</p>
+            <div class="hm-divider"></div>
+            <div id="hm-suspense-copy" aria-live="polite">Duh...</div>
+            <div class="hm-divider"></div>
+            <p class="hm-sub">Tarik napas dulu. House-mu sebentar lagi terungkap.</p>
+        </div>
+
         {{-- ─── FASE 2: PENENTUAN ─── --}}
         <div id="hm-p2" class="hm-phase" style="display:none;">
             <p class="hm-label mb-4">PENENTUAN SEDANG BERLANGSUNG</p>
+            <div id="hm-group-display" aria-live="polite">
+                <span id="hm-group-name">MENCARI...</span>
+            </div>
             <div class="hm-prog-track">
                 <div class="hm-prog-fill" id="hm-prog"></div>
             </div>
@@ -515,6 +647,8 @@
                     <span class="hm-scan-key">PENENTUAN</span>
                     <span class="hm-scan-val" id="hs3v">........</span>
                 </div>
+
+                <canvas id="hm-celebration-canvas" aria-hidden="true"></canvas>
             </div>
         </div>
 
@@ -522,7 +656,8 @@
         <div id="hm-p3" class="hm-phase" style="display:none;">
             <p class="hm-label" style="color: rgba(150,220,150,0.7);">PENENTUAN HOUSE SELESAI</p>
             <div class="hm-divider"></div>
-            <p class="hm-sub mb-3">Kamu telah ditempatkan di</p>
+            <p class="hm-congrats mb-3">SELAMAT!</p>
+            <p class="hm-sub mb-3">KAMU TERGABUNG DALAM</p>
             <div id="hm-house-name" class="hm-house-name mb-3"></div>
             <div class="hm-divider"></div>
             <p class="hm-sub hm-journey mt-2 mb-5"
@@ -544,6 +679,8 @@
 </div>
 
 <script>
+const hmGroupNames = @json($kelompoks->pluck('nama_kelompok')->values());
+
 /* ═══════════════════════════════════════════════════
    SISTEM PARTIKEL — debu emas / pasir
 ═══════════════════════════════════════════════════ */
@@ -617,12 +754,292 @@
     window.addEventListener('resize', resize);
 })();
 
+/* ═══════════════════════════════════════════════════
+   KEMBANG API EMAS — burst di luar popup
+═══════════════════════════════════════════════════ */
+(function() {
+    const canvas = document.getElementById('hm-celebration-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let rafId = null;
+    let running = false;
+    let burstTimers = [];
+
+    function resize() {
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = window.innerWidth * ratio;
+        canvas.height = window.innerHeight * ratio;
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+
+    function burst(point, count = 30) {
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.18;
+            const speed = 1.2 + Math.random() * 1.7;
+            particles.push({
+                x: point.x,
+                y: point.y,
+                px: point.x,
+                py: point.y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                life: 0,
+                maxLife: 42 + Math.random() * 24,
+                size: 0.7 + Math.random() * 1.2,
+            });
+        }
+    }
+
+    function draw() {
+        if (!running) return;
+
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        particles.forEach(particle => {
+            particle.life++;
+            particle.px = particle.x;
+            particle.py = particle.y;
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            particle.vy += 0.028;
+            particle.vx *= 0.985;
+            particle.vy *= 0.985;
+
+            const alpha = Math.max(0, 1 - particle.life / particle.maxLife);
+            ctx.beginPath();
+            ctx.moveTo(particle.px, particle.py);
+            ctx.lineTo(particle.x, particle.y);
+            ctx.strokeStyle = `rgba(232, 212, 158, ${alpha * 0.75})`;
+            ctx.lineWidth = particle.size;
+            ctx.stroke();
+        });
+
+        particles = particles.filter(particle => particle.life < particle.maxLife);
+        rafId = requestAnimationFrame(draw);
+    }
+
+    window.hmFireworksStart = function() {
+        if (running) return;
+        running = true;
+        particles = [];
+        resize();
+        canvas.classList.add('active');
+        rafId = requestAnimationFrame(draw);
+
+        const rect = document.getElementById('hm-modal').getBoundingClientRect();
+        const sideOffset = Math.max(14, Math.min(34, window.innerWidth * 0.08));
+        const points = [
+            { x: Math.max(10, rect.left - sideOffset), y: rect.top + rect.height * 0.2 },
+            { x: Math.min(window.innerWidth - 10, rect.right + sideOffset), y: rect.top + rect.height * 0.2 },
+            { x: rect.left + rect.width * 0.2, y: Math.max(18, rect.top - 12) },
+            { x: rect.right - rect.width * 0.2, y: Math.max(18, rect.top - 12) },
+        ];
+
+        burst(points[0], 28);
+        burst(points[1], 28);
+        burstTimers.push(setTimeout(() => {
+            burst(points[2], 22);
+            burst(points[3], 22);
+        }, 180));
+        burstTimers.push(setTimeout(() => {
+            burst(points[Math.random() > 0.5 ? 0 : 1], 20);
+        }, 360));
+        burstTimers.push(setTimeout(() => window.hmFireworksStop(), 1250));
+    };
+
+    window.hmFireworksStop = function() {
+        running = false;
+        if (rafId) cancelAnimationFrame(rafId);
+        burstTimers.forEach(clearTimeout);
+        burstTimers = [];
+        rafId = null;
+        particles = [];
+        canvas.classList.remove('active');
+        document.getElementById('hm-modal').classList.remove('hm-celebration-glow');
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener('resize', resize);
+})();
+
+/* ═══════════════════════════════════════════════════
+   KEMBANG API EMAS — burst di luar popup
+═══════════════════════════════════════════════════ */
+(function() {
+    const canvas = document.getElementById('hm-celebration-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let rafId = null;
+    let running = false;
+    let burstTimers = [];
+
+    function resize() {
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = window.innerWidth * ratio;
+        canvas.height = window.innerHeight * ratio;
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+
+    function burst(point, count = 30) {
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.18;
+            const speed = 1.2 + Math.random() * 1.7;
+            particles.push({
+                x: point.x,
+                y: point.y,
+                px: point.x,
+                py: point.y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                life: 0,
+                maxLife: 42 + Math.random() * 24,
+                size: 0.7 + Math.random() * 1.2,
+            });
+        }
+    }
+
+    function draw() {
+        if (!running) return;
+
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        particles.forEach(particle => {
+            particle.life++;
+            particle.px = particle.x;
+            particle.py = particle.y;
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            particle.vy += 0.028;
+            particle.vx *= 0.985;
+            particle.vy *= 0.985;
+
+            const alpha = Math.max(0, 1 - particle.life / particle.maxLife);
+            ctx.beginPath();
+            ctx.moveTo(particle.px, particle.py);
+            ctx.lineTo(particle.x, particle.y);
+            ctx.strokeStyle = `rgba(232, 212, 158, ${alpha * 0.75})`;
+            ctx.lineWidth = particle.size;
+            ctx.stroke();
+        });
+
+        particles = particles.filter(particle => particle.life < particle.maxLife);
+        rafId = requestAnimationFrame(draw);
+    }
+
+    window.hmFireworksStart = function() {
+        if (running) return;
+        running = true;
+        particles = [];
+        resize();
+        canvas.classList.add('active');
+        rafId = requestAnimationFrame(draw);
+
+        const rect = document.getElementById('hm-modal').getBoundingClientRect();
+        const sideOffset = Math.max(14, Math.min(34, window.innerWidth * 0.08));
+        const points = [
+            { x: Math.max(10, rect.left - sideOffset), y: rect.top + rect.height * 0.2 },
+            { x: Math.min(window.innerWidth - 10, rect.right + sideOffset), y: rect.top + rect.height * 0.2 },
+            { x: rect.left + rect.width * 0.2, y: Math.max(18, rect.top - 12) },
+            { x: rect.right - rect.width * 0.2, y: Math.max(18, rect.top - 12) },
+        ];
+
+        burst(points[0], 28);
+        burst(points[1], 28);
+        burstTimers.push(setTimeout(() => {
+            burst(points[2], 22);
+            burst(points[3], 22);
+        }, 180));
+        burstTimers.push(setTimeout(() => {
+            burst(points[Math.random() > 0.5 ? 0 : 1], 20);
+        }, 360));
+        burstTimers.push(setTimeout(() => window.hmFireworksStop(), 1250));
+    };
+
+    window.hmFireworksStop = function() {
+        running = false;
+        if (rafId) cancelAnimationFrame(rafId);
+        burstTimers.forEach(clearTimeout);
+        burstTimers = [];
+        rafId = null;
+        particles = [];
+        canvas.classList.remove('active');
+        document.getElementById('hm-modal').classList.remove('hm-celebration-glow');
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener('resize', resize);
+})();
+
 
 let hmCanClose = true;
 let hmRequested = false;
+let hmResultGroupUrl = null;
+let hmHasRevealed = false;
+let hmTimers = [];
+let hmTickerTimer = null;
+let hmTickerChangeToken = 0;
+
+function hmSetTimeout(callback, delay) {
+    const timer = setTimeout(callback, delay);
+    hmTimers.push(timer);
+    return timer;
+}
+
+function hmClearTimers() {
+    hmTickerChangeToken++;
+    hmTimers.forEach(clearTimeout);
+    hmTimers = [];
+    if (hmTickerTimer) {
+        clearTimeout(hmTickerTimer);
+        hmTickerTimer = null;
+    }
+}
+
+function hmSetGroupName(name) {
+    const display = document.getElementById('hm-group-name');
+    const token = ++hmTickerChangeToken;
+    display.classList.add('hm-ticker-change');
+    hmSetTimeout(() => {
+        if (token !== hmTickerChangeToken) return;
+        display.innerText = name;
+        display.classList.remove('hm-ticker-change');
+    }, 90);
+}
+
+function hmStartTicker(duration) {
+    if (!hmGroupNames.length) return;
+
+    const display = document.getElementById('hm-group-display');
+    const start = performance.now();
+    let index = Math.floor(Math.random() * hmGroupNames.length);
+
+    const tick = () => {
+        const elapsed = performance.now() - start;
+        if (elapsed >= duration) return;
+
+        const progress = elapsed / duration;
+        const interval = progress < 0.55
+            ? 115
+            : progress < 0.78
+                ? 190
+                : progress < 0.93
+                    ? 330
+                    : 560;
+
+        index = (index + 1) % hmGroupNames.length;
+        hmSetGroupName(hmGroupNames[index]);
+        if (progress > 0.78) display.classList.add('hm-ticker-suspense');
+        hmTickerTimer = setTimeout(tick, interval);
+    };
+
+    hmSetGroupName(hmGroupNames[index]);
+    tick();
+}
 
 function hmShowPhase(id) {
-    ['hm-p1','hm-p2','hm-p3','hm-pe'].forEach(p => {
+    ['hm-p1','hm-ps','hm-p2','hm-p3','hm-pe'].forEach(p => {
         const el = document.getElementById(p);
         el.style.display = 'none';
     });
@@ -643,6 +1060,9 @@ function hmOpen() {
 
 function hmClose() {
     if (!hmCanClose) return;
+    const shouldRefreshDashboard = hmHasRevealed;
+    hmClearTimers();
+    hmFireworksStop();
     document.getElementById('hm-overlay').classList.remove('hm-open');
     document.body.style.overflow = '';
     hmParticlesStop();
@@ -650,15 +1070,29 @@ function hmClose() {
     document.getElementById('hm-sigil').style.opacity = '0';
     document.getElementById('hm-radar').classList.remove('active');
     document.getElementById('hm-radial').classList.remove('active');
+
+    if (shouldRefreshDashboard) {
+        location.reload();
+    }
 }
 
 function hmReset() {
+    hmClearTimers();
+    hmFireworksStop();
+    hmRequested = false;
+    hmResultGroupUrl = null;
+    hmHasRevealed = false;
     hmCanClose = true;
     document.getElementById('hm-close').classList.remove('hidden');
     document.getElementById('hm-prog').style.width = '0%';
     document.getElementById('hm-sigil').style.opacity = '0';
     document.getElementById('hm-radar').classList.remove('active');
     document.getElementById('hm-radial').classList.remove('active');
+    document.getElementById('hm-group-display').classList.remove('hm-ticker-suspense');
+    document.getElementById('hm-group-name').innerText = 'MENCARI...';
+    const suspenseCopy = document.getElementById('hm-suspense-copy');
+    suspenseCopy.innerText = 'Duh...';
+    suspenseCopy.className = '';
     ['hs1','hs2','hs3'].forEach(id => {
         document.getElementById(id).className = 'hm-scan-line';
     });
@@ -671,25 +1105,61 @@ function hmReset() {
 function hmBegin() {
     if (hmRequested) return;  // prevent double-tap
     hmRequested = true;
+    hmClearTimers();
     hmCanClose = false;
     document.getElementById('hm-close').classList.add('hidden');
 
+    hmShowPhase('hm-ps');
+    const suspenseCopy = document.getElementById('hm-suspense-copy');
+    const suspenseStep = (text, delay, className = '') => {
+        hmSetTimeout(() => {
+            suspenseCopy.className = 'hm-suspense-hidden';
+            hmSetTimeout(() => {
+                suspenseCopy.innerText = text;
+                suspenseCopy.className = className;
+            }, 180);
+        }, delay);
+    };
+
+    suspenseStep('Duh...', 0);
+    suspenseStep('Kok jadi ikut deg-degan ya? 😭', 380, 'hm-suspense-nervous');
+    suspenseStep('Oke... siap?', 900);
+    suspenseStep('3', 1320, 'hm-suspense-countdown');
+    suspenseStep('2', 1870, 'hm-suspense-countdown');
+    suspenseStep('1', 2420, 'hm-suspense-countdown');
+    suspenseStep('SIAP, YA?', 2970);
+    suspenseStep('GACHA DIMULAI!', 3190);
+    hmSetTimeout(() => hmStartGacha(), 3550);
+}
+
+function hmStartGacha() {
+    if (!hmRequested) return;
     hmShowPhase('hm-p2');
 
     const prog = document.getElementById('hm-prog');
+    const spinDuration = 9000;
+    const request = fetch("{{ route('peserta.gacha_kelompok') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        }
+    }).then(r => r.json());
+
+    hmStartTicker(spinDuration);
 
     // Activate radar
-    setTimeout(() => document.getElementById('hm-radar').classList.add('active'), 100);
+    hmSetTimeout(() => document.getElementById('hm-radar').classList.add('active'), 100);
 
     // Show sigil faintly
-    setTimeout(() => document.getElementById('hm-sigil').style.opacity = '0.35', 200);
+    hmSetTimeout(() => document.getElementById('hm-sigil').style.opacity = '0.35', 200);
 
     // Step 1 — IDENTITAS
-    setTimeout(() => {
+    hmSetTimeout(() => {
         document.getElementById('hs1').classList.add('active');
         prog.style.width = '28%';
     }, 300);
-    setTimeout(() => {
+    hmSetTimeout(() => {
         document.getElementById('hs1').classList.replace('active','done');
         document.getElementById('hs1v').innerText = 'TERVERIFIKASI ✓';
         prog.style.width = '55%';
@@ -697,41 +1167,38 @@ function hmBegin() {
     }, 900);
 
     // Step 2 — PROFIL
-    setTimeout(() => {
+    hmSetTimeout(() => {
         document.getElementById('hs2').classList.replace('active','done');
         document.getElementById('hs2v').innerText = 'SESUAI ✓';
         prog.style.width = '78%';
         document.getElementById('hs3').classList.add('active');
     }, 1550);
 
-    // Step 3 — PENENTUAN + fire fetch
-    setTimeout(() => {
+    // Step 3 — PENENTUAN; hasil backend tetap ditampilkan setelah timeline selesai
+    hmSetTimeout(() => {
         prog.style.width = '92%';
+    }, 2000);
 
-        fetch("{{ route('peserta.gacha_kelompok') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Complete progress
+    hmSetTimeout(() => {
+        request
+            .then(data => {
+                if (data.status !== 'success') {
+                    hmFail(data.message || 'Terjadi kesalahan.');
+                    return;
+                }
+
                 document.getElementById('hs3').classList.replace('active','done');
                 document.getElementById('hs3v').innerText = 'SELESAI ✓';
                 prog.style.width = '100%';
+                document.getElementById('hm-group-display').classList.remove('hm-ticker-suspense');
+                hmResultGroupUrl = data.kelompok.url_grub || null;
+                hmSetGroupName(data.kelompok.nama);
 
-                // Brief pause then reveal
-                setTimeout(() => hmReveal(data.kelompok.nama), 600);
-            } else {
-                hmFail(data.message || 'Terjadi kesalahan.');
-            }
-        })
-        .catch(() => hmFail('Koneksi gagal. Coba lagi.'));
-
-    }, 2000);
+                // Hold the actual assignment briefly before starting the reveal.
+                hmSetTimeout(() => hmReveal(data.kelompok.nama), 300);
+            })
+            .catch(() => hmFail('Koneksi gagal. Coba lagi.'));
+    }, spinDuration);
 }
 
 function hmReveal(houseName) {
@@ -744,24 +1211,29 @@ function hmReveal(houseName) {
     modal.style.transition = 'background 0.35s ease';
     modal.style.background = 'rgba(4,3,2,0.99)';
 
-    setTimeout(() => {
+    hmSetTimeout(() => {
         modal.style.background = '';
         modal.style.transition = '';
 
         // Show phase 3
         document.getElementById('hm-house-name').innerText = houseName;
         hmShowPhase('hm-p3');
+        hmHasRevealed = true;
+        document.getElementById('hm-modal').classList.add('hm-celebration-glow');
 
         // Trigger radial glow
-        setTimeout(() => document.getElementById('hm-radial').classList.add('active'), 100);
+        hmSetTimeout(() => document.getElementById('hm-radial').classList.add('active'), 100);
+        hmFireworksStart();
 
         // Show close again
         document.getElementById('hm-close').classList.remove('hidden');
         hmCanClose = true;
-    }, 380);
+    }, 180);
 }
 
 function hmFail(msg) {
+    hmClearTimers();
+    hmFireworksStop();
     hmRequested = false;
     hmCanClose = true;
     document.getElementById('hm-close').classList.remove('hidden');
@@ -771,8 +1243,24 @@ function hmFail(msg) {
 }
 
 function hmEnter() {
-    hmClose();
+    hmCloseWithoutRefresh();
+    if (hmResultGroupUrl) {
+        window.open(hmResultGroupUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    // Refresh the dashboard so the existing House action buttons appear immediately.
     location.reload();
+}
+
+function hmCloseWithoutRefresh() {
+    hmClearTimers();
+    hmFireworksStop();
+    document.getElementById('hm-overlay').classList.remove('hm-open');
+    document.body.style.overflow = '';
+    hmParticlesStop();
+    document.getElementById('hm-sigil').style.opacity = '0';
+    document.getElementById('hm-radar').classList.remove('active');
+    document.getElementById('hm-radial').classList.remove('active');
 }
 
 // Escape key

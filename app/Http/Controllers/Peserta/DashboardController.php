@@ -186,7 +186,16 @@ class DashboardController extends Controller
         }
 
         $assignedKelompok = DB::transaction(function () use ($peserta) {
-            $gender = $peserta->jenis_kelamin;
+            // Lock the participant row so concurrent requests cannot assign twice.
+            $lockedPeserta = MahasiswaBaru::query()
+                ->lockForUpdate()
+                ->findOrFail($peserta->id);
+
+            if ($lockedPeserta->kelompok_id) {
+                return null;
+            }
+
+            $gender = $lockedPeserta->jenis_kelamin;
 
             // Cari kelompok dengan gender yang sama paling sedikit agar seimbang
             $kelompok = Kelompok::withCount([
@@ -206,7 +215,7 @@ class DashboardController extends Controller
             }
 
             // 1. Simpan kelompok ke profil maba
-            $peserta->update([
+            $lockedPeserta->update([
                 'kelompok_id' => $kelompok->id,
             ]);
 
@@ -214,7 +223,7 @@ class DashboardController extends Controller
             DataMahasiswa::updateOrCreate(
                 ['nim' => $peserta->nim],
                 [
-                    'nama' => $peserta->nama_lengkap,
+                    'nama' => $lockedPeserta->nama_lengkap,
                     'kelompok_id' => $kelompok->id,
                     // Status kehadiran awal (0 = belum hadir/alfa)
                     'day_1' => '0',
@@ -243,6 +252,13 @@ class DashboardController extends Controller
 
             return $kelompok;
         });
+
+        if (!$assignedKelompok) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda sudah memiliki House!',
+            ], 400);
+        }
 
         return response()->json([
             'status' => 'success',
