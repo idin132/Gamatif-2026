@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\MahasiswaBaru;
+use App\Mail\RegistrasiMabaNotification;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log; // <-- Tambahkan ini untuk log error jika ada kendala
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -74,6 +77,13 @@ class PesertaAuthController extends Controller
             'bukti_sosmed' => $sosmedPaths,
             'status' => 0,
         ]);
+
+        // ═══ KIRIM EMAIL NOTIFIKASI REGISTRASI BERHASIL ═══
+        try {
+            Mail::to($peserta->email)->send(new RegistrasiMabaNotification($peserta));
+        } catch (\Throwable $e) {
+            Log::error('Gagal mengirim email registrasi: ' . $e->getMessage());
+        }
 
         Auth::guard('peserta')->login($peserta);
 

@@ -20,32 +20,54 @@ class ScanPresensiController extends Controller
     {
         $request->validate([
             'jadwal_kegiatan_id' => 'required|exists:jadwal_kegiatan,id',
-            'qr_data' => 'required',
+            'identifier' => 'required', // Bisa berupa string QR Code atau NIM
         ]);
 
-        $payload = json_decode($request->qr_data, true);
-        $mabaId = $payload['id'] ?? (is_numeric($request->qr_data) ? $request->qr_data : null);
+        $identifier = trim($request->identifier);
+        $maba = null;
 
-        $maba = MahasiswaBaru::with('kelompok')->find($mabaId);
+        // 1. Cek apakah identifier berformat JSON (dari hasil kamera scan QR)
+        $payload = json_decode($identifier, true);
 
+        if (json_last_error() === JSON_ERROR_NONE && is_array($payload)) {
+            if (!empty($payload['id'])) {
+                $maba = MahasiswaBaru::with('kelompok')->find($payload['id']);
+            } elseif (!empty($payload['nim'])) {
+                $maba = MahasiswaBaru::with('kelompok')->where('nim', $payload['nim'])->first();
+            }
+        }
+
+        // 2. Jika bukan JSON, cari langsung berdasarkan NIM atau ID
+        if (!$maba) {
+            $maba = MahasiswaBaru::with('kelompok')
+                ->where('nim', $identifier)
+                ->orWhere('id', $identifier)
+                ->first();
+        }
+
+        // 3. Validasi maba ditemukan atau belum di-ACC
         if (!$maba) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'QR Code tidak valid atau mahasiswa tidak ditemukan!'
+                'message' => "Mahasiswa dengan data '{$identifier}' tidak ditemukan!"
             ], 404);
         }
 
-        // Ambil kelompok_id dari payload QR atau fallback ke kelompok mahasiswa
-        $kelompokId = $payload['kelompok_id'] ?? $maba->kelompok_id;
+        if ($maba->status != 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Mahasiswa {$maba->nama_lengkap} ({$maba->nim}) belum di-ACC oleh admin!"
+            ], 422);
+        }
 
-        // Simpan ke tabel absensi beserta kelompok_id
-        Absensi::updateOrCreate(
+        // 4. Catat presensi ke database
+        $absensi = Absensi::updateOrCreate(
             [
                 'mahasiswa_baru_id' => $maba->id,
                 'jadwal_kegiatan_id' => $request->jadwal_kegiatan_id,
             ],
             [
-                'kelompok_id' => $kelompokId,
+                'kelompok_id' => $maba->kelompok_id,
                 'status' => 'hadir',
             ]
         );
@@ -54,10 +76,10 @@ class ScanPresensiController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => "Absensi berhasil: {$maba->nim} - {$maba->nama_lengkap} [Kelompok: {$namaKelompok}] (HADIR)",
+            'message' => "Presensi Berhasil: {$maba->nim} - {$maba->nama_lengkap} [House: {$namaKelompok}] (HADIR)",
             'data' => [
-                'nama' => $maba->nama_lengkap,
                 'nim' => $maba->nim,
+                'nama' => $maba->nama_lengkap,
                 'kelompok' => $namaKelompok,
                 'status' => 'hadir',
             ]

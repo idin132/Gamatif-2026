@@ -13,6 +13,13 @@ class ListAbsensis extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            // Tombol Pintasan ke Halaman Scanner QR
+            Actions\Action::make('scan_qr')
+                ->label('Scan QR Presensi')
+                ->icon('heroicon-o-qr-code')
+                ->color('warning')
+                ->url(url('/admin-scan'))
+                ->openUrlInNewTab(),
             Actions\CreateAction::make(),
         ];
     }

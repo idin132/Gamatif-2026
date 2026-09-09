@@ -17,14 +17,6 @@ class ListMahasiswaBarus extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-
-            // Tombol Pintasan ke Halaman Scanner QR
-            Actions\Action::make('scan_qr')
-                ->label('Scan QR Presensi')
-                ->icon('heroicon-o-qr-code')
-                ->color('warning')
-                ->url(url('/admin-scan'))
-                ->openUrlInNewTab(), // Buka di tab baru agar kamera scanner tidak menutup panel Filament
                 
             Actions\Action::make('export_excel')
                 ->label('Export Data Maba')

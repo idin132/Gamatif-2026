@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,40 +9,47 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         cinzel: ['Cinzel', 'serif'],
-                        inter:  ['Inter', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        gold: { 300:'#F5E6C8', 400:'#E8D49E', 500:'#C9A84C', 600:'#A67C2A' }
+                        gold: { 300: '#F5E6C8', 400: '#E8D49E', 500: '#C9A84C', 600: '#A67C2A' }
                     }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
         .page-bg {
             background-image:
-                linear-gradient(to bottom, rgba(10,8,6,0.80) 0%, rgba(10,8,6,0.95) 100%),
+                linear-gradient(to bottom, rgba(10, 8, 6, 0.80) 0%, rgba(10, 8, 6, 0.95) 100%),
                 url('/images/BACKGROUND_WEB.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
         }
+
         .card-glass {
-            background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
             backdrop-filter: blur(20px) saturate(150%);
             -webkit-backdrop-filter: blur(20px) saturate(150%);
-            border: 1px solid rgba(201,168,76,0.2);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
+
         .section-label {
             font-family: 'Cinzel', serif;
             font-size: 0.6rem;
@@ -49,10 +57,11 @@
             text-transform: uppercase;
             color: #C9A84C;
         }
+
         .input-glass {
             width: 100%;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(201,168,76,0.22);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(201, 168, 76, 0.22);
             border-radius: 0.25rem;
             padding: 0.625rem 1rem;
             font-size: 0.875rem;
@@ -60,17 +69,32 @@
             outline: none;
             transition: border-color 0.25s;
         }
-        .input-glass:focus { border-color: rgba(201,168,76,0.55); }
+
+        .input-glass:focus {
+            border-color: rgba(201, 168, 76, 0.55);
+        }
+
         .divider-gold {
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(201,168,76,0.5) 30%, rgba(201,168,76,0.7) 50%, rgba(201,168,76,0.5) 70%, transparent);
-            box-shadow: 0 0 8px rgba(201,168,76,0.45);
+            background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.5) 30%, rgba(201, 168, 76, 0.7) 50%, rgba(201, 168, 76, 0.5) 70%, transparent);
+            box-shadow: 0 0 8px rgba(201, 168, 76, 0.45);
         }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #0a0806; }
-        ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.35); border-radius: 3px; }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0806;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(201, 168, 76, 0.35);
+            border-radius: 3px;
+        }
     </style>
 </head>
+
 <body class="page-bg text-zinc-100 min-h-screen p-4 flex flex-col items-center">
 
     <div class="max-w-md w-full space-y-5 py-6">
@@ -79,14 +103,14 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <img src="/images/logo-gamatif.png" alt="GAMATIF"
-                     class="h-9 w-auto drop-shadow-[0_2px_8px_rgba(201,168,76,0.4)]">
+                    class="h-9 w-auto drop-shadow-[0_2px_8px_rgba(201,168,76,0.4)]">
                 <div>
                     <p class="section-label">Panitia</p>
                     <h1 class="font-cinzel text-lg font-bold text-white">Scanner Presensi</h1>
                 </div>
             </div>
             <a href="/admin"
-               class="text-xs font-cinzel tracking-widest uppercase text-zinc-500 hover:text-gold-400 transition">
+                class="text-xs font-cinzel tracking-widest uppercase text-zinc-500 hover:text-gold-400 transition">
                 ← Admin
             </a>
         </div>
@@ -114,6 +138,26 @@
             </p>
         </div>
 
+        <!-- Input Manual Alternatif (NIM) -->
+        <div class="card-glass p-5 rounded-lg space-y-3">
+            <div class="flex items-center justify-between">
+                <p class="section-label">Input Manual Presensi</p>
+                <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Alternatif</span>
+            </div>
+
+            <form id="form-manual" onsubmit="submitManualNIM(event)" class="space-y-2">
+                <div class="flex gap-2">
+                    <input type="text" id="input-nim" placeholder="Ketik NIM Mahasiswa..." required
+                        class="input-glass rounded-sm font-mono text-sm placeholder:text-zinc-600">
+                    <button type="submit"
+                        class="px-5 py-2 bg-gold-500 hover:bg-gold-600 text-black font-cinzel font-bold text-xs uppercase tracking-wider rounded-sm transition shrink-0 active:scale-95 shadow-md shadow-gold-500/10">
+                        Absen
+                    </button>
+                </div>
+                <p class="text-[10px] text-zinc-500">Gunakan kolom ini apabila barcode tidak terbaca kamera.</p>
+            </form>
+        </div>
+
         <!-- Hasil scan -->
         <div id="scan-result" class="hidden p-4 rounded-sm border text-sm font-medium"></div>
 
@@ -122,11 +166,8 @@
     <script>
         let isProcessing = false;
 
-        function onScanSuccess(decodedText, decodedResult) {
-            if (isProcessing) return;
-            isProcessing = true;
-
-            const jadwalId  = document.getElementById('select-jadwal').value;
+        function prosesPresensi(identifierValue) {
+            const jadwalId = document.getElementById('select-jadwal').value;
             const resultBox = document.getElementById('scan-result');
 
             fetch("{{ route('admin.scan.proses') }}", {
@@ -135,30 +176,53 @@
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
-                body: JSON.stringify({ jadwal_kegiatan_id: jadwalId, qr_data: decodedText })
+                body: JSON.stringify({
+                    jadwal_kegiatan_id: jadwalId,
+                    identifier: identifierValue
+                })
             })
-            .then(res => res.json())
-            .then(data => {
-                resultBox.className = 'p-4 rounded-sm border text-sm font-medium';
+                .then(res => res.json())
+                .then(data => {
+                    resultBox.className = 'p-4 rounded-sm border text-sm font-medium';
 
-                if (data.status === 'success') {
-                    resultBox.classList.add(
-                        'bg-emerald-950/60', 'border-emerald-600/50', 'text-emerald-300'
-                    );
-                    resultBox.innerHTML = `<strong>✓ BERHASIL</strong><br><span class="text-xs font-normal">${data.message}</span>`;
-                } else {
-                    resultBox.classList.add(
-                        'bg-rose-950/60', 'border-rose-700/50', 'text-rose-300'
-                    );
-                    resultBox.innerHTML = `<strong>✕ GAGAL</strong><br><span class="text-xs font-normal">${data.message}</span>`;
-                }
+                    if (data.status === 'success') {
+                        resultBox.classList.add(
+                            'bg-emerald-950/60', 'border-emerald-600/50', 'text-emerald-300'
+                        );
+                        resultBox.innerHTML = `<strong>✓ BERHASIL</strong><br><span class="text-xs font-normal">${data.message}</span>`;
 
-                setTimeout(() => { isProcessing = false; }, 2000);
-            })
-            .catch(err => {
-                console.error(err);
-                isProcessing = false;
-            });
+                        // Reset input manual jika berhasil
+                        const inputNim = document.getElementById('input-nim');
+                        if (inputNim) inputNim.value = '';
+                    } else {
+                        resultBox.classList.add(
+                            'bg-rose-950/60', 'border-rose-700/50', 'text-rose-300'
+                        );
+                        resultBox.innerHTML = `<strong>✕ GAGAL</strong><br><span class="text-xs font-normal">${data.message}</span>`;
+                    }
+
+                    setTimeout(() => { isProcessing = false; }, 1800);
+                })
+                .catch(err => {
+                    console.error(err);
+                    isProcessing = false;
+                });
+        }
+
+        // Handler dari Kamera QR
+        function onScanSuccess(decodedText, decodedResult) {
+            if (isProcessing) return;
+            isProcessing = true;
+            prosesPresensi(decodedText);
+        }
+
+        // Handler dari Form Input Manual NIM
+        function submitManualNIM(event) {
+            event.preventDefault();
+            const nim = document.getElementById('input-nim').value.trim();
+            if (!nim) return;
+
+            prosesPresensi(nim);
         }
 
         const html5QrcodeScanner = new Html5QrcodeScanner(
@@ -168,4 +232,5 @@
     </script>
 
 </body>
+
 </html>

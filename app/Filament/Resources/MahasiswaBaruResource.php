@@ -146,14 +146,14 @@ class MahasiswaBaruResource extends Resource
                     ->modalHeading('Verifikasi Mahasiswa Baru')
                     ->modalDescription('Apakah Anda yakin ingin menyetujui akun maba ini? Email notifikasi akan dikirim secara otomatis.')
                     ->action(function ($record) {
+                        // ═══ KODE TERSIMPAN DI SINI ═══
                         $record->update(['status' => 1]);
 
-                        // Kirim email notifikasi
                         if (filter_var($record->email, FILTER_VALIDATE_EMAIL)) {
                             try {
                                 Mail::to($record->email)->send(new MabaAccNotification($record));
-                            } catch (\Exception $e) {
-                                // Biarkan tetap sukses walau email offline/gagal
+                            } catch (\Throwable $e) {
+                                \Illuminate\Support\Facades\Log::error('Gagal kirim email ACC: ' . $e->getMessage());
                             }
                         }
 
@@ -170,7 +170,24 @@ class MahasiswaBaruResource extends Resource
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->visible(fn() => auth()->user()?->isAdmin())
-                        ->action(fn(Collection $records) => $records->each->update(['status' => 1])),
+                        ->action(function (Collection $records) {
+                            foreach ($records as $record) {
+                                $record->update(['status' => 1]);
+
+                                if (filter_var($record->email, FILTER_VALIDATE_EMAIL)) {
+                                    try {
+                                        Mail::to($record->email)->send(new MabaAccNotification($record));
+                                    } catch (\Throwable $e) {
+                                        \Illuminate\Support\Facades\Log::error('Gagal kirim bulk ACC: ' . $e->getMessage());
+                                    }
+                                }
+                            }
+
+                            Notification::make()
+                                ->title('Semua Maba Terpilih Berhasil di-ACC')
+                                ->success()
+                                ->send();
+                        }),
                     Tables\Actions\DeleteBulkAction::make()->visible(fn() => auth()->user()?->isAdmin()),
                 ]),
             ]);
