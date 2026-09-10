@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-@source "./resources/**/*.{vue,js,blade.php}";
-@source "./node_modules/flowbite/**/*.js";
-
-@plugin "flowbite/plugin";

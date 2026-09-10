@@ -1121,15 +1121,41 @@ function hmBegin() {
         }, delay);
     };
 
-    suspenseStep('Duh...', 0);
-    suspenseStep('Kok jadi ikut deg-degan ya? 😭', 380, 'hm-suspense-nervous');
-    suspenseStep('Oke... siap?', 900);
-    suspenseStep('3', 1320, 'hm-suspense-countdown');
-    suspenseStep('2', 1870, 'hm-suspense-countdown');
-    suspenseStep('1', 2420, 'hm-suspense-countdown');
-    suspenseStep('SIAP, YA?', 2970);
-    suspenseStep('GACHA DIMULAI!', 3190);
-    hmSetTimeout(() => hmStartGacha(), 3550);
+    const suspenseLines = [
+        'Duh...',
+        'Kok jadi ikut deg-degan ya?',
+        'Bentar...',
+        'Oke, santai.',
+        'Santai katanya...',
+        'Ini beneran nggak bisa diulang kan? 😭',
+        'Udah siap?',
+        'Yakin?',
+        'Tarik napas dulu...',
+        'Buang napas...',
+        'Sekarang pasrah.',
+        'Bismillah dulu deh.',
+        'Yaudah, pasrah aja.',
+        'Nggak ada tombol mundur ya...',
+        'Waduh...',
+        'Aduh, jadi takut sendiri.',
+        'Kenapa jantung ikut lomba ya?',
+        'Kok suasananya jadi serius banget...',
+        'Ini cuma gacha. Cuma gacha...',
+        'Semoga hasilnya tidak mengecewakan. 😭'
+    ];
+    const suspenseDuration = 500;
+    suspenseLines.forEach((line, index) => {
+        suspenseStep(line, index * suspenseDuration, index === 5 ? 'hm-suspense-nervous' : '');
+    });
+
+    const afterSuspense = suspenseLines.length * suspenseDuration;
+    suspenseStep('YA UDAH.', afterSuspense);
+    suspenseStep('BISMILLAH.', afterSuspense + 700);
+    suspenseStep('3', afterSuspense + 1400, 'hm-suspense-countdown');
+    suspenseStep('2', afterSuspense + 1950, 'hm-suspense-countdown');
+    suspenseStep('1', afterSuspense + 2500, 'hm-suspense-countdown');
+    suspenseStep('GACHA DIMULAI!', afterSuspense + 3050);
+    hmSetTimeout(() => hmStartGacha(), afterSuspense + 3410);
 }
 
 function hmStartGacha() {

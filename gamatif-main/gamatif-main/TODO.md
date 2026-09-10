@@ -1,1 +1,0 @@
-- [x] Update resources/js/App.vue to hide ContactSection on buat_menfess page by changing v-if="!isAuthPage" to v-if="!isAuthPage && route.name !== 'buat_menfess'"
