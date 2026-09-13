@@ -54,7 +54,7 @@ class DashboardController extends Controller
             'pesan' => $request->pesan,
         ]);
 
-        return back()->with('success', 'Pesan kritik & saran berhasil dikirim.');
+        return back()->with('kritik_saran_success', 'Pesan kritik & saran berhasil dikirim.');
     }
     public function index()
     {

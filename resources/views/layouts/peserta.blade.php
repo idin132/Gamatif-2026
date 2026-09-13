@@ -7,6 +7,23 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .swal2-popup {
+            width: 280px !important;
+            padding: 0.75rem !important;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) !important;
+            backdrop-filter: blur(18px) saturate(150%) !important;
+            -webkit-backdrop-filter: blur(18px) saturate(150%) !important;
+            border: 1px solid rgba(201,168,76,0.45) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12) !important;
+        }
+        .swal2-icon { transform: scale(0.7); margin: 0.25rem auto !important; }
+        .swal2-title { font-size: 1.1rem !important; padding: 0.25rem 0 !important; }
+        .swal2-html-container { font-size: 0.8rem !important; margin: 0.5rem 0 !important; }
+        .swal2-confirm { font-size: 0.75rem !important; padding: 0.5rem 1rem !important; }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -388,11 +405,6 @@
                 <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mb-2">Kritik &amp; Saran</h2>
                 <p class="text-zinc-400 text-sm mb-8">Beri masukan demi kelancaran kegiatan orientasi.</p>
                 <div class="card-glass rounded-lg p-6 text-left">
-                    @if(session('success'))
-                        <div class="mb-4 px-4 py-3 rounded-sm bg-emerald-950/60 border border-emerald-700/50 text-emerald-300 text-xs">
-                            {{ session('success') }}
-                        </div>
-                    @endif
                     <form action="{{ route('kirim_kritik_saran') }}" method="POST" class="space-y-4">
                         @csrf
                         <div>
@@ -444,6 +456,19 @@
         }, { threshold: 0.1 });
         revealEls.forEach(el => revealObserver.observe(el));
     </script>
+    @if(session('kritik_saran_success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: @js(session('kritik_saran_success')),
+                confirmButtonText: 'Oke',
+                confirmButtonColor: '#C9A84C',
+                background: '#17110b',
+                color: '#F5E6C8'
+            });
+        </script>
+    @endif
     @stack('scripts')
 </body>
 </html>

@@ -7,6 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .swal2-popup {
+            width: 280px !important;
+            padding: 0.75rem !important;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) !important;
+            backdrop-filter: blur(18px) saturate(150%) !important;
+            -webkit-backdrop-filter: blur(18px) saturate(150%) !important;
+            border: 1px solid rgba(201,168,76,0.45) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12) !important;
+        }
+        .swal2-icon { transform: scale(0.7); margin: 0.25rem auto !important; }
+        .swal2-title { font-size: 1.1rem !important; padding: 0.25rem 0 !important; }
+        .swal2-html-container { font-size: 0.8rem !important; margin: 0.5rem 0 !important; }
+        .swal2-confirm { font-size: 0.75rem !important; padding: 0.5rem 1rem !important; }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -258,12 +275,6 @@
                 <p class="font-cinzel text-[0.65rem] tracking-[0.45em] uppercase text-gold-500 mb-3">Gamatif Confess</p>
                 <h1 class="font-cinzel text-4xl sm:text-5xl font-bold text-white mb-4">Gamafess</h1>
                 <p class="text-zinc-400 text-sm max-w-sm mx-auto">Klik salah satu kartu untuk post di story Instagram!</p>
-
-                @if(session('menfess_success'))
-                    <div class="mt-4 inline-block px-5 py-2.5 rounded-sm bg-emerald-950/60 border border-emerald-700/50 text-emerald-300 text-xs font-cinzel tracking-wider">
-                        ✓ {{ session('menfess_success') }}
-                    </div>
-                @endif
 
                 <div class="mt-6">
                     <button onclick="document.getElementById('modalMenfess').classList.remove('hidden')"
@@ -531,6 +542,18 @@
             populateExport(card.dataset.from, card.dataset.to, card.dataset.message, card.dataset.accent || '#E8D49E');
             shareMenfessToStory(card.dataset.to);
         }
+
+        @if(session('menfess_success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Menfess terkirim!',
+                text: @js(session('menfess_success')),
+                confirmButtonText: 'Oke',
+                confirmButtonColor: '#C9A84C',
+                background: '#17110b',
+                color: '#F5E6C8'
+            });
+        @endif
     </script>
 
 </body>

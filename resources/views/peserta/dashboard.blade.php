@@ -145,6 +145,19 @@
                 <a href="{{ $sm->url }}" target="_blank"
                    class="flex items-center gap-2 px-3 py-2.5 rounded-sm transition group"
                    style="background: rgba(255,255,255,0.03); border-left: 3px solid rgba(201,168,76,0.5);">
+                    @if($sm->thumbnail)
+                        <img src="{{ asset('storage/' . $sm->thumbnail) }}"
+                             alt="{{ $sm->nama }}"
+                             class="w-7 h-7 rounded-md object-cover shrink-0 border border-gold-500/30">
+                    @else
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center shrink-0 text-gold-400"
+                              style="background: rgba(201,168,76,0.12);">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                      d="M13.5 6.5l1.2-1.2a4 4 0 015.66 5.66l-3 3a4 4 0 01-5.66 0m-1.2 3.5l-1.2 1.2a4 4 0 01-5.66-5.66l3-3a4 4 0 015.66 0"/>
+                            </svg>
+                        </span>
+                    @endif
                     <span class="text-sm text-zinc-300 group-hover:text-white transition">{{ $sm->nama }}</span>
                 </a>
             @endforeach
