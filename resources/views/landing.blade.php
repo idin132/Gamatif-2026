@@ -273,6 +273,9 @@
                 <a href="#beranda" class="nav-link">Beranda</a>
                 <a href="#about"  class="nav-link">Tentang</a>
                 <a href="#agenda" class="nav-link">Jadwal</a>
+                @auth('peserta')
+                    <a href="{{ route('peserta.voting_ketua_angkatan') }}" class="nav-link">Voting</a>
+                @endauth
                 <a href="{{ route('menfess') }}" class="nav-link">Gamafess</a>
             </nav>
 
@@ -306,6 +309,7 @@
                     </div>
                     <div class="py-1">
                         <a href="{{ route('peserta.dashboard') }}" class="flex items-center px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition">Dashboard</a>
+                        <a href="{{ route('peserta.voting_ketua_angkatan') }}" class="flex items-center px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition">Voting Ketua Angkatan</a>
                         <a href="{{ route('peserta.profil') }}" class="flex items-center px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition">Profil Saya</a>
                     </div>
                     <div class="border-t border-gold-500/15 py-1">
@@ -347,6 +351,9 @@
             <a href="#beranda"  class="nav-link block">Beranda</a>
             <a href="#about"   class="nav-link block">Tentang</a>
             <a href="#agenda"  class="nav-link block">Jadwal</a>
+            @auth('peserta')
+                <a href="{{ route('peserta.voting_ketua_angkatan') }}" class="nav-link block">Voting</a>
+            @endauth
             <a href="{{ route('menfess') }}" class="nav-link block">Gamafess</a>
             <div class="pt-4 flex flex-col gap-3">
                 @auth('peserta')

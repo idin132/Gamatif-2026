@@ -25,6 +25,8 @@ Route::middleware('auth:peserta')->prefix('portal')->name('peserta.')->group(fun
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profil', [DashboardController::class, 'profil'])->name('profil');
     Route::get('/absensi', [DashboardController::class, 'absensi'])->name('absensi');
+    Route::get('/voting-ketua-angkatan', [DashboardController::class, 'votingKetuaAngkatan'])->name('voting_ketua_angkatan');
+    Route::post('/voting-ketua-angkatan/{ketuaAngkatan}', [DashboardController::class, 'storeVotingKetuaAngkatan'])->name('voting_ketua_angkatan.store');
     Route::post('/update-profil', [DashboardController::class, 'updateProfil'])->name('update_profil');
     Route::post('/pilih-kelompok', [DashboardController::class, 'pilihKelompok'])->name('pilih_kelompok');
     Route::post('/ajukan-izin', [DashboardController::class, 'ajukanIzin'])->name('ajukan_izin');
