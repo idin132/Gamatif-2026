@@ -47,7 +47,8 @@
                                         NIM</td>
                                     <td align="right"
                                         style="padding: 12px 16px; font-size: 13px; color: #f4f4f5; font-weight: bold; font-family: monospace; border-bottom: 1px solid #2a2419;">
-                                        {{ $maba->nim }}</td>
+                                        {{ $maba->nim }}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td
@@ -61,10 +62,11 @@
                                 <tr>
                                     <td style="padding: 12px 16px; font-size: 13px; color: #a1a1aa;">Status Presensi
                                     </td>
-                                    <td align="right" style="padding: 12px 16px; font-size: 12px;">
+                                    <td align="right" style="padding: 12px 16px; font-size: 12px; white-space: nowrap;">
                                         <span
-                                            style="background-color: #064e3b; color: #6ee7b7; padding: 4px 10px; border-radius: 6px; font-weight: 600; border: 1px solid #047857;">Tiket
-                                            QR Siap Digunakan</span>
+                                            style="display: inline-block; background-color: #064e3b; color: #6ee7b7; padding: 4px 8px; border-radius: 4px; font-weight: 600; border: 1px solid #047857; font-size: 11px; line-height: 1.2;">
+                                            Diverifikasi
+                                        </span>
                                     </td>
                                 </tr>
                             </table>
@@ -74,7 +76,7 @@
                                 style="margin-bottom: 24px;">
                                 <tr>
                                     <td align="center">
-                                        <a href="{{ url('/peserta/login') }}" target="_blank"
+                                        <a href="{{ url('/portal/login') }}" target="_blank"
                                             style="display: inline-block; background-color: #c9a84c; color: #0d0c0a; font-size: 13px; font-weight: 700; text-decoration: none; padding: 12px 28px; border-radius: 6px; letter-spacing: 0.05em; text-transform: uppercase;">
                                             Unduh Tiket QR Presensi
                                         </a>

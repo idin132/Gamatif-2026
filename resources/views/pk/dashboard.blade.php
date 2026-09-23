@@ -21,7 +21,7 @@
                         inter: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        gold: { 300: '#F5E6C8', 400: '#E8D49E', 500: '#C9A84C', 600: '#A67C2A' }
+                        gold: {300: '#F5E6C8', 400: '#E8D49E', 500: '#C9A84C', 600: '#A67C2A'}
                     }
                 }
             }
@@ -309,6 +309,7 @@
             </div>
 
             <!-- Keterangan barang -->
+            <!-- Keterangan barang bawaan (2 Barang) -->
             <div class="card-glass px-3.5 py-3 rounded-lg text-xs space-y-1">
                 <p class="section-label mb-1.5">Keterangan Barang Bawaan</p>
 
@@ -335,58 +336,84 @@
                 </div>
             </div>
 
-            <p class="text-[10px] text-zinc-500 -mt-1 px-0.5">Tap B1–B5 untuk toggle status bawa. <span
-                    class="text-emerald-500/70">Hijau = Bawa.</span></p>
+            <p class="text-[10px] text-zinc-500 -mt-1 px-0.5">
+                Tap B1–B2 untuk toggle status bawa. <span class="text-emerald-500/70">Hijau = Bawa.</span>
+            </p>
 
-            <!-- Mahasiswa cards -->
+            <!-- Mapping ID Jadwal Kegiatan Day 1, Day 2, Day 3 -->
+            @php
+                $jadwalDay1 = $jadwals[0] ?? null;
+                $jadwalDay2 = $jadwals[1] ?? null;
+                $jadwalDay3 = $jadwals[2] ?? null;
+            @endphp
+
+            <!-- Mahasiswa cards (Hanya Muncul Jika Hadir pada Day Tersebut) -->
             <div class="space-y-3">
-                @forelse($dataMahasiswas as $row)
-                    <div id="card-maba-{{ $row->id }}" class="card-glass p-4 rounded-lg">
-                        <div class="flex justify-between items-center mb-3">
-                            <div>
-                                <h3 class="font-cinzel font-bold text-sm text-white">{{ $row->nama }}</h3>
-                                <span class="text-xs font-mono text-gold-500/70">{{ $row->nim }}</span>
-                            </div>
-                            <button type="button" onclick="checkAllBarang({{ $row->id }})"
-                                class="btn-glass-sm px-3 py-1.5 rounded-sm flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                                Semua
-                            </button>
-                        </div>
+                @php $countHadirTotal = 0; @endphp
 
-                        <div class="grid grid-cols-5 gap-2">
-                            @for($i = 0; $i < 5; $i++)
-                                @php
-                                    $colDay1 = $barangColumns['day_1'][$i];
-                                    $colDay2 = $barangColumns['day_2'][$i];
-                                    $colDay3 = $barangColumns['day_3'][$i];
-                                @endphp
-                                <button type="button"
-                                    @click="toggleBarang({{ $row->id }}, activeDay === 'day_1' ? '{{ $colDay1 }}' : (activeDay === 'day_2' ? '{{ $colDay2 }}' : '{{ $colDay3 }}'), $event)"
-                                    class="barang-btn h-11 rounded-md flex flex-col items-center justify-center font-cinzel font-bold text-xs border transition"
-                                    :class="$el.dataset[activeDay] === '1' ? 'barang-active' : 'barang-inactive'"
-                                    data-day_1="{{ $row->$colDay1 }}" data-day_2="{{ $row->$colDay2 }}"
-                                    data-day_3="{{ $row->$colDay3 }}">
-                                    B{{ $i + 1 }}
+                @foreach($mabas as $maba)
+                    @php
+                        $row = $dataMahasiswas->firstWhere('nim', $maba->nim);
+
+                        $isHadirDay1 = $maba->absensis->firstWhere('jadwal_kegiatan_id', $jadwalDay1?->id)?->status === 'hadir';
+                        $isHadirDay2 = $maba->absensis->firstWhere('jadwal_kegiatan_id', $jadwalDay2?->id)?->status === 'hadir';
+                        $isHadirDay3 = $maba->absensis->firstWhere('jadwal_kegiatan_id', $jadwalDay3?->id)?->status === 'hadir';
+                    @endphp
+
+                    @if($row)
+                        <div id="card-maba-{{ $row->id }}" class="card-glass p-4 rounded-lg" x-show="(activeDay === 'day_1' && {{ $isHadirDay1 ? 'true' : 'false' }}) || 
+                                                 (activeDay === 'day_2' && {{ $isHadirDay2 ? 'true' : 'false' }}) || 
+                                                 (activeDay === 'day_3' && {{ $isHadirDay3 ? 'true' : 'false' }})">
+
+                            <div class="flex justify-between items-center mb-3">
+                                <div>
+                                    <h3 class="font-cinzel font-bold text-sm text-white">{{ $row->nama }}</h3>
+                                    <span class="text-xs font-mono text-gold-500/70">{{ $row->nim }}</span>
+                                </div>
+                                <button type="button" onclick="checkAllBarang({{ $row->id }})"
+                                    class="btn-glass-sm px-3 py-1.5 rounded-sm flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Semua
                                 </button>
-                            @endfor
+                            </div>
+
+                            <!-- Grid Tombol B1 dan B2 Saja -->
+                            <div class="grid grid-cols-2 gap-2">
+                                @for($i = 0; $i < 2; $i++)
+                                    @php
+                                        $colDay1 = $barangColumns['day_1'][$i];
+                                        $colDay2 = $barangColumns['day_2'][$i];
+                                        $colDay3 = $barangColumns['day_3'][$i];
+                                    @endphp
+                                    <button type="button"
+                                        @click="toggleBarang({{ $row->id }}, activeDay === 'day_1' ? '{{ $colDay1 }}' : (activeDay === 'day_2' ? '{{ $colDay2 }}' : '{{ $colDay3 }}'), $event)"
+                                        class="barang-btn h-11 rounded-md flex flex-col items-center justify-center font-cinzel font-bold text-xs border transition"
+                                        :class="$el.dataset[activeDay] === '1' ? 'barang-active' : 'barang-inactive'"
+                                        data-day_1="{{ $row->$colDay1 }}" data-day_2="{{ $row->$colDay2 }}"
+                                        data-day_3="{{ $row->$colDay3 }}">
+                                        B{{ $i + 1 }}
+                                    </button>
+                                @endfor
+                            </div>
                         </div>
-                    </div>
-                @empty
-                    <div class="card-glass rounded-lg py-6 px-4 text-center" style="border-color:rgba(201,168,76,0.08);">
-                        <svg class="w-7 h-7 mx-auto mb-2 text-gold-500/20" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                        <p class="section-label text-zinc-600 mb-0.5">Belum ada anggota</p>
-                        <p class="text-[10px] text-zinc-600">Belum ada anggota yang terdaftar di kelompok ini.</p>
-                    </div>
-                @endforelse
+                    @endif
+                @endforeach
+
+                <!-- Fallback Jika Tidak Ada Maba yang Hadir di Day Tersebut -->
+                <div class="card-glass rounded-lg py-6 px-4 text-center" style="border-color:rgba(201,168,76,0.08);"
+                    x-show="!$el.parentElement.querySelector('.card-glass[x-show*=\'true\']')">
+                    <svg class="w-7 h-7 mx-auto mb-2 text-gold-500/20" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <p class="section-label text-zinc-600 mb-0.5">Tidak Ada Maba Hadir</p>
+                    <p class="text-[10px] text-zinc-600">Belum ada mahasiswa yang ter-scan hadir pada hari ini.</p>
+                </div>
             </div>
         </div>
 
@@ -477,7 +504,7 @@
                             <!-- DAY 1 -->
                             <div x-show="activeDay === 'day_1'">
                                 <span class="inline-flex items-center justify-center min-w-[70px] px-2.5 py-1 rounded-md border text-[10px] font-cinzel font-semibold uppercase tracking-wider
-                                {{ $badgeClasses[$statusDay1] ?? $badgeClasses['alpa'] }}">
+                                            {{ $badgeClasses[$statusDay1] ?? $badgeClasses['alpa'] }}">
                                     {{ ucfirst($statusDay1) }}
                                 </span>
                             </div>
@@ -485,7 +512,7 @@
                             <!-- DAY 2 -->
                             <div x-show="activeDay === 'day_2'">
                                 <span class="inline-flex items-center justify-center min-w-[70px] px-2.5 py-1 rounded-md border text-[10px] font-cinzel font-semibold uppercase tracking-wider
-                                {{ $badgeClasses[$statusDay2] ?? $badgeClasses['alpa'] }}">
+                                            {{ $badgeClasses[$statusDay2] ?? $badgeClasses['alpa'] }}">
                                     {{ ucfirst($statusDay2) }}
                                 </span>
                             </div>
@@ -493,7 +520,7 @@
                             <!-- DAY 3 -->
                             <div x-show="activeDay === 'day_3'">
                                 <span class="inline-flex items-center justify-center min-w-[70px] px-2.5 py-1 rounded-md border text-[10px] font-cinzel font-semibold uppercase tracking-wider
-                                {{ $badgeClasses[$statusDay3] ?? $badgeClasses['alpa'] }}">
+                                            {{ $badgeClasses[$statusDay3] ?? $badgeClasses['alpa'] }}">
                                     {{ ucfirst($statusDay3) }}
                                 </span>
                             </div>
@@ -523,6 +550,7 @@
         </div>
 
         <!-- ─ TAB 3: IZIN ─ -->
+        <!-- ─ TAB 3: IZIN ─ -->
         <div x-show="activeTab === 'izin'" class="space-y-4">
             <div class="card-glass p-5 rounded-lg">
                 <p class="section-label mb-4">Input Surat Izin / Sakit</p>
@@ -530,13 +558,81 @@
                     class="space-y-3">
                     @csrf
 
-                    <div>
+                    <!-- Custom Select + Search NIM / Nama -->
+                    <div x-data="{ 
+                    open: false, 
+                    search: '', 
+                    selectedId: '', 
+                    selectedText: 'Pilih Mahasiswa...',
+                    mabas: [
+                        @foreach($mabas as $m)
+                            { id: '{{ $m->id }}', nim: '{{ $m->nim }}', name: '{{ addslashes($m->nama_lengkap) }}' },
+                        @endforeach
+                    ],
+                    get filteredMabas() {
+                        if (!this.search) return this.mabas;
+                        const query = this.search.toLowerCase();
+                        return this.mabas.filter(m => 
+                            m.nim.toLowerCase().includes(query) || 
+                            m.name.toLowerCase().includes(query)
+                        );
+                    },
+                    select(maba) {
+                        this.selectedId = maba.id;
+                        this.selectedText = maba.nim + ' - ' + maba.name;
+                        this.open = false;
+                        this.search = '';
+                    }
+                }" class="relative" @click.outside="open = false">
+
                         <label class="section-label block mb-1.5">Pilih Mahasiswa</label>
-                        <select name="mahasiswa_baru_id" required class="input-glass">
-                            @foreach($mabas as $m)
-                                <option value="{{ $m->id }}">{{ $m->nim }} - {{ $m->nama_lengkap }}</option>
-                            @endforeach
-                        </select>
+
+                        <!-- Input Hidden untuk Mengirimkan ID ke Backend Controller -->
+                        <input type="hidden" name="mahasiswa_baru_id" :value="selectedId" required>
+
+                        <!-- Trigger Dropdown -->
+                        <button type="button" @click="open = !open"
+                            class="input-glass w-full text-left flex justify-between items-center cursor-pointer">
+                            <span x-text="selectedText" :class="selectedId ? 'text-zinc-100' : 'text-zinc-400'"></span>
+                            <svg class="w-3.5 h-3.5 text-gold-500/60 transition-transform shrink-0"
+                                :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Dropdown Menu dengan Search Box -->
+                        <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                            class="absolute z-50 left-0 right-0 mt-1 rounded-md card-glass overflow-hidden shadow-2xl border border-gold-500/30"
+                            style="background: rgba(12,9,6,0.98);">
+
+                            <!-- Search Input Box -->
+                            <div class="p-2 border-b border-gold-500/20">
+                                <input type="text" x-model="search" x-ref="searchInput"
+                                    placeholder="Cari NIM atau nama..."
+                                    class="input-glass w-full text-xs py-1.5 px-2 bg-black/40 border-gold-500/30 focus:border-gold-500">
+                            </div>
+
+                            <!-- List Mahasiswa -->
+                            <ul class="max-h-48 overflow-y-auto divide-y divide-zinc-800/40">
+                                <template x-for="m in filteredMabas" :key="m.id">
+                                    <li @click="select(m)"
+                                        class="px-3 py-2 text-xs text-zinc-300 hover:bg-gold-500/20 hover:text-gold-300 cursor-pointer transition flex items-center justify-between">
+                                        <span x-text="m.nim + ' - ' + m.name"></span>
+                                        <svg x-show="selectedId === m.id" class="w-3.5 h-3.5 text-gold-400 shrink-0"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </li>
+                                </template>
+                                <li x-show="filteredMabas.length === 0"
+                                    class="px-3 py-3 text-xs text-zinc-500 text-center italic">
+                                    Mahasiswa tidak ditemukan.
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div>
@@ -556,12 +652,12 @@
                                 <option value="izin">Izin</option>
                             </select>
                         </div>
-                        <div>
+                        <div class="space-y-1.5">
                             <label class="section-label block mb-1.5">Foto Surat</label>
-                            <input type="file" name="foto" accept="image/*" capture="environment" class="w-full text-xs text-zinc-400
-                                          file:py-1.5 file:px-3 file:rounded-sm file:border-0
-                                          file:bg-gold-500/15 file:text-gold-400 file:text-xs
-                                          hover:file:bg-gold-500/25 transition">
+                            <input type="file" name="foto" accept="image/*" class="w-full text-xs text-zinc-400
+                            file:py-1.5 file:px-3 file:rounded-sm file:border-0
+                            file:bg-gold-500/15 file:text-gold-400 file:text-xs
+                            hover:file:bg-gold-500/25 transition">
                         </div>
                     </div>
 
@@ -572,14 +668,15 @@
                     </div>
 
                     <button type="submit" class="w-full py-3 rounded-sm text-xs font-cinzel tracking-widest uppercase
-                                   bg-gradient-to-r from-gold-500/20 to-gold-500/10
-                                   border border-gold-500/40 text-gold-300
-                                   hover:from-gold-500/35 hover:to-gold-500/20 hover:border-gold-500/7 hover:text-white
-                                   transition backdrop-blur-md">
+                           bg-gradient-to-r from-gold-500/20 to-gold-500/10
+                           border border-gold-500/40 text-gold-300
+                           hover:from-gold-500/35 hover:to-gold-500/20 hover:border-gold-500/7 hover:text-white
+                           transition backdrop-blur-md">
                         Simpan Surat Izin
                     </button>
                 </form>
             </div>
+        </div>
         </div>
 
         <!-- ─ TAB 4: ANGGOTA ─ -->
@@ -593,8 +690,8 @@
                         </p>
                     </div>
                     <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $maba->nomor_whatsapp) }}" target="_blank" class="px-3 py-1.5 rounded-sm text-xs font-cinzel tracking-wider uppercase
-                                              bg-emerald-900/40 border border-emerald-600/50 text-emerald-400
-                                              hover:bg-emerald-800/50 hover:border-emerald-500 transition">
+                                                          bg-emerald-900/40 border border-emerald-600/50 text-emerald-400
+                                                          hover:bg-emerald-800/50 hover:border-emerald-500 transition">
                         WA
                     </a>
                 </div>
@@ -674,8 +771,8 @@
 
             fetch("{{ route('pk.toggle_barang') }}", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
-                body: JSON.stringify({ id: id, field: field })
+                headers: {"Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}"},
+                body: JSON.stringify({id: id, field: field})
             })
                 .then(res => res.json())
                 .then(data => {
@@ -723,8 +820,8 @@
 
             fetch("{{ route('pk.check_all_barang') }}", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
-                body: JSON.stringify({ id: id, day: currentDay })
+                headers: {"Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}"},
+                body: JSON.stringify({id: id, day: currentDay})
             })
                 .then(res => res.json())
                 .then(data => {

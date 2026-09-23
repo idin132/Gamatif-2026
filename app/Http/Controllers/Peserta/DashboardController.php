@@ -17,6 +17,7 @@ use App\Models\KritikSaran;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Hash;
 use App\Models\MahasiswaBaru;
+use App\Models\Pengumuman;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -63,13 +64,15 @@ class DashboardController extends Controller
         $jadwals = JadwalKegiatan::orderBy('tanggal', 'asc')->get();
         $pengaturan = PengaturanWeb::first();
         $sosmed = SosialMedia::all();
+        $pengumumans = Pengumuman::latest()->get();
 
         return view('peserta.dashboard', compact(
             'peserta',
             'kelompoks',
             'jadwals',
             'pengaturan',
-            'sosmed'
+            'sosmed',
+            'pengumumans'
         ));
     }
 
@@ -231,22 +234,13 @@ class DashboardController extends Controller
                     'day_3' => '0',
                     // Default barang bawaan Day 1 - Day 3 tersetel ke '0'
                     'makanan_berat_day_1' => '1',
-                    'susu_superhero_day_1' => '1',
-                    'raja_dangdut_day_1' => '1',
-                    'snack_rindu_day_1' => '1',
-                    'wafer_terkenal_day_1' => '1',
+                    'roti_kepompong_day_1' => '1',
 
                     'makanan_berat_day_2' => '1',
-                    'susu_monyet_day_2' => '1',
-                    'roti_ketawa_day_2' => '1',
-                    'cokelat_berjerawat_day_2' => '1',
-                    'bintang_selanjutnya_day_2' => '1',
+                    'roti_kepompong_day_2' => '1',
 
                     'makanan_berat_day_3' => '1',
-                    'biskuit_3_cara_day_3' => '1',
-                    'air_keringat_atlet_day_3' => '1',
-                    'susu_puncak_day_3' => '1',
-                    'stik_sayuran_day_3' => '1',
+                    'roti_kepompong_day_3' => '1',
                 ]
             );
 

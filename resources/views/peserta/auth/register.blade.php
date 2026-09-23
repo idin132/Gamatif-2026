@@ -86,7 +86,7 @@
 
                 <div class="pt-2 border-t border-gold-500/10 space-y-3">
                     <div>
-                        <label class="section-label block mb-1.5">Bukti Registrasi <span class="text-zinc-600 normal-case">(PDF/JPG)</span></label>
+                        <label class="section-label block mb-1.5">Foto Kartu Kuning (PDF/JPG) <span class="text-zinc-600 normal-case">Maks 5 MB</span></label>
                         <input type="file" name="bukti_registrasi" required
                                class="w-full text-xs text-zinc-400
                                       file:mr-3 file:py-1.5 file:px-3 file:rounded-sm file:border-0
@@ -95,7 +95,7 @@
                                       hover:file:bg-gold-500/25 transition">
                     </div>
                     <div>
-                        <label class="section-label block mb-1.5">Bukti Sosmed <span class="text-zinc-600 normal-case">(Bisa Multiple)</span></label>
+                        <label class="section-label block mb-1.5">Bukti Follow Sosmed (PDF/JPG) <span class="text-zinc-600 normal-case">Maks 5 MB</span></label>
                         <input type="file" name="bukti_sosmed[]" multiple required
                                class="w-full text-xs text-zinc-400
                                       file:mr-3 file:py-1.5 file:px-3 file:rounded-sm file:border-0

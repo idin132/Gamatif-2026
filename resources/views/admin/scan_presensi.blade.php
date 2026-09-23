@@ -21,7 +21,7 @@
                         inter: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        gold: { 300: '#F5E6C8', 400: '#E8D49E', 500: '#C9A84C', 600: '#A67C2A' }
+                        gold: {300: '#F5E6C8', 400: '#E8D49E', 500: '#C9A84C', 600: '#A67C2A'}
                     }
                 }
             }
@@ -165,10 +165,13 @@
 
     <script>
         let isProcessing = false;
+        let html5QrCode = null;
+        let currentCameraId = null;
 
         function prosesPresensi(identifierValue) {
             const jadwalId = document.getElementById('select-jadwal').value;
             const resultBox = document.getElementById('scan-result');
+            resultBox.classList.remove('hidden');
 
             fetch("{{ route('admin.scan.proses') }}", {
                 method: "POST",
@@ -186,22 +189,17 @@
                     resultBox.className = 'p-4 rounded-sm border text-sm font-medium';
 
                     if (data.status === 'success') {
-                        resultBox.classList.add(
-                            'bg-emerald-950/60', 'border-emerald-600/50', 'text-emerald-300'
-                        );
+                        resultBox.classList.add('bg-emerald-950/60', 'border-emerald-600/50', 'text-emerald-300');
                         resultBox.innerHTML = `<strong>✓ BERHASIL</strong><br><span class="text-xs font-normal">${data.message}</span>`;
 
-                        // Reset input manual jika berhasil
                         const inputNim = document.getElementById('input-nim');
                         if (inputNim) inputNim.value = '';
                     } else {
-                        resultBox.classList.add(
-                            'bg-rose-950/60', 'border-rose-700/50', 'text-rose-300'
-                        );
+                        resultBox.classList.add('bg-rose-950/60', 'border-rose-700/50', 'text-rose-300');
                         resultBox.innerHTML = `<strong>✕ GAGAL</strong><br><span class="text-xs font-normal">${data.message}</span>`;
                     }
 
-                    setTimeout(() => { isProcessing = false; }, 1800);
+                    setTimeout(() => {isProcessing = false;}, 2000);
                 })
                 .catch(err => {
                     console.error(err);
@@ -209,26 +207,52 @@
                 });
         }
 
-        // Handler dari Kamera QR
-        function onScanSuccess(decodedText, decodedResult) {
+        function onScanSuccess(decodedText) {
             if (isProcessing) return;
             isProcessing = true;
+
+            // Play audio beep singkat (opsional/opsi UX)
             prosesPresensi(decodedText);
         }
 
-        // Handler dari Form Input Manual NIM
         function submitManualNIM(event) {
             event.preventDefault();
             const nim = document.getElementById('input-nim').value.trim();
             if (!nim) return;
-
             prosesPresensi(nim);
         }
 
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false
-        );
-        html5QrcodeScanner.render(onScanSuccess);
+        // Inisialisasi Kamera Belakang & Opsi Switch
+        async function startScanner() {
+            html5QrCode = new Html5Qrcode("reader");
+
+            try {
+                // Memaksa memilih kamera belakang (environment)
+                const config = {
+                    fps: 15,
+                    qrbox: {width: 250, height: 250},
+                    aspectRatio: 1.0
+                };
+
+                await html5QrCode.start(
+                    {facingMode: "environment"},
+                    config,
+                    onScanSuccess
+                );
+            } catch (err) {
+                console.error("Gagal membuka kamera belakang:", err);
+                // Fallback jika kamera belakang tidak terdeteksi
+                Html5Qrcode.getCameras().then(devices => {
+                    if (devices && devices.length > 0) {
+                        html5QrCode.start(devices[0].id, {fps: 10, qrbox: 250}, onScanSuccess);
+                    }
+                });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            startScanner();
+        });
     </script>
 
 </body>

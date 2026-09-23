@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MahasiswaBaru;
 use App\Mail\RegistrasiMabaNotification;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log; // <-- Tambahkan ini untuk log error jika ada kendala
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -51,12 +51,21 @@ class PesertaAuthController extends Controller
             'nomor_whatsapp' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:mahasiswa_baru,email'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'bukti_registrasi' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
-            'bukti_sosmed.*' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'bukti_registrasi' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'bukti_sosmed.*' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
+        // ═══ FORMAT NOMOR WHATSAPP KE FORMAT 62 ═══
+        $wa = preg_replace('/[^0-9]/', '', $validated['nomor_whatsapp']);
+        if (str_starts_with($wa, '0')) {
+            $wa = '62' . substr($wa, 1);
+        }
+
+        // ═══ CLEANING ALAMAT (HAPUS ENTER/NEWLINE SEJAK INPUT) ═══
+        $alamatClean = preg_replace('/\s+/', ' ', trim($validated['alamat']));
+
         $buktiRegPath = $request->file('bukti_registrasi')->store('bukti_registrasi', 'public');
-        
+
         $sosmedPaths = [];
         if ($request->hasFile('bukti_sosmed')) {
             foreach ($request->file('bukti_sosmed') as $file) {
@@ -69,8 +78,8 @@ class PesertaAuthController extends Controller
             'nama_lengkap' => $validated['nama_lengkap'],
             'jenis_kelamin' => $validated['jenis_kelamin'],
             'tanggal_lahir' => $validated['tanggal_lahir'],
-            'alamat' => $validated['alamat'],
-            'nomor_whatsapp' => $validated['nomor_whatsapp'],
+            'alamat' => $alamatClean,
+            'nomor_whatsapp' => $wa, // <-- Menggunakan nomor WA yang sudah dibersihkan & di-format
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'bukti_registrasi' => $buktiRegPath,

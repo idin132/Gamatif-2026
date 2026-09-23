@@ -41,10 +41,7 @@ class BarangBawaanDay3Resource extends Resource
 
                 // Label dinamis: Jika ada di DB pakai nama barangnya, jika belum diisi fallback ke Barang X
                 Tables\Columns\ToggleColumn::make('makanan_berat_day_3')->label($items[0] ?? 'Makanan Berat'),
-                Tables\Columns\ToggleColumn::make('biskuit_3_cara_day_3')->label($items[1] ?? 'Oreo'),
-                Tables\Columns\ToggleColumn::make('air_keringat_atlet_day_3')->label($items[2] ?? 'Pocary Sweat'),
-                Tables\Columns\ToggleColumn::make('susu_puncak_day_3')->label($items[3] ?? 'Cimory'),
-                Tables\Columns\ToggleColumn::make('stik_sayuran_day_3')->label($items[4] ?? 'Biskitop Vegetable'),
+                Tables\Columns\ToggleColumn::make('roti_kepompong_day_3')->label($items[1] ?? 'Roti Kepompong (Croissant)'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('kelompok_id')

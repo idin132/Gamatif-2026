@@ -19,24 +19,15 @@ class PkPortalController extends Controller
         return [
             'day_1' => [
                 'makanan_berat_day_1',
-                'susu_superhero_day_1',
-                'raja_dangdut_day_1',
-                'snack_rindu_day_1',
-                'wafer_terkenal_day_1',
+                'roti_kepompong_day_1',
             ],
             'day_2' => [
                 'makanan_berat_day_2',
-                'susu_monyet_day_2',
-                'roti_ketawa_day_2',
-                'cokelat_berjerawat_day_2',
-                'bintang_selanjutnya_day_2',
+                'roti_kepompong_day_2',
             ],
             'day_3' => [
                 'makanan_berat_day_3',
-                'biskuit_3_cara_day_3',
-                'air_keringat_atlet_day_3',
-                'susu_puncak_day_3',
-                'stik_sayuran_day_3',
+                'roti_kepompong_day_3',
             ],
         ];
     }
@@ -46,10 +37,9 @@ class PkPortalController extends Controller
         $kelompokId = $user->kelompok_id;
         $kelompok = $user->kelompok;
 
-        // 1. Ambil daftar jadwal/agenda kegiatan (urutkan tanggal/id untuk mapping Day 1, Day 2, Day 3)
         $jadwals = JadwalKegiatan::orderBy('tanggal', 'asc')->get();
 
-        // 2. Ambil maba kelompok ini beserta riwayat absensinya
+        // Ambil data maba beserta relasi absensi & data_mahasiswa
         $mabas = MahasiswaBaru::where('kelompok_id', $kelompokId)
             ->with([
                 'absensis' => function ($q) use ($kelompokId) {
@@ -58,14 +48,14 @@ class PkPortalController extends Controller
             ])
             ->get();
 
-        // 3. Data pendukung barang bawaan & izin
         $dataMahasiswas = DataMahasiswa::where('kelompok_id', $kelompokId)->get();
         $izinList = \App\Models\IzinKehadiran::whereIn('mahasiswa_baru_id', $mabas->pluck('id'))->latest()->get();
         $barangColumns = $this->getBarangColumns();
+
         $masterBarang = [
-            'day_1' => NamaBarangBawaan::where('hari', 'day_1')->orderBy('id', 'asc')->pluck('nama_barang')->toArray(),
-            'day_2' => NamaBarangBawaan::where('hari', 'day_2')->orderBy('id', 'asc')->pluck('nama_barang')->toArray(),
-            'day_3' => NamaBarangBawaan::where('hari', 'day_3')->orderBy('id', 'asc')->pluck('nama_barang')->toArray(),
+            'day_1' => ['Makanan Berat', 'Roti Kepompong (Croissant)'],
+            'day_2' => ['Makanan Berat', 'Roti Kepompong (Croissant)'],
+            'day_3' => ['Makanan Berat', 'Roti Kepompong (Croissant)'],
         ];
 
         return view('pk.dashboard', compact(

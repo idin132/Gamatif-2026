@@ -48,31 +48,23 @@ class DataMahasiswaResource extends Resource
                     ->relationship('kelompok', 'nama_kelompok')
                     ->required(),
                 Forms\Components\Section::make('Kelengkapan Day 1')
-                    ->columns(5)
+                    ->columns(2)
                     ->schema([
                         Forms\Components\Toggle::make('makanan_berat_day_1')->label('Makanan Berat'),
-                        Forms\Components\Toggle::make('susu_superhero_day_1')->label('Ultra Milk'),
-                        Forms\Components\Toggle::make('raja_dangdut_day_1')->label('Roma'),
-                        Forms\Components\Toggle::make('snack_rindu_day_1')->label('Dilan'),
-                        Forms\Components\Toggle::make('wafer_terkenal_day_1')->label('Superstar'),
+                        Forms\Components\Toggle::make('roti_kepompong_day_1')->label('Roti Kepompong (Croissant)'),
+                        
                     ]),
                 Forms\Components\Section::make('Kelengkapan Day 2')
-                    ->columns(5)
+                    ->columns(2)
                     ->schema([
                         Forms\Components\Toggle::make('makanan_berat_day_2')->label('Makanan Berat'),
-                        Forms\Components\Toggle::make('susu_monyet_day_2')->label('Nobo'),
-                        Forms\Components\Toggle::make('roti_ketawa_day_2')->label('Aoka'),
-                        Forms\Components\Toggle::make('cokelat_berjerawat_day_2')->label('Beng-Beng'),
-                        Forms\Components\Toggle::make('bintang_selanjutnya_day_2')->label('Nextar'),
+                        Forms\Components\Toggle::make('roti_kepompong_day_2')->label('Roti Kepompong (Croissant)'),
                     ]),
                 Forms\Components\Section::make('Kelengkapan Day 3')
-                    ->columns(5)
+                    ->columns(2)
                     ->schema([
                         Forms\Components\Toggle::make('makanan_berat_day_3')->label('Makanan Berat'),
-                        Forms\Components\Toggle::make('biskuit_3_cara_day_3')->label('Oreo'),
-                        Forms\Components\Toggle::make('air_keringat_atlet_day_3')->label('Pocary Sweat'),
-                        Forms\Components\Toggle::make('susu_puncak_day_3')->label('Cimory'),
-                        Forms\Components\Toggle::make('stik_sayuran_day_3')->label('Biskitop Vegetable'),
+                        Forms\Components\Toggle::make('roti_kepompong_day_3')->label('Roti Kepompong (Croissant)'),
                     ]),
             ]);
     }

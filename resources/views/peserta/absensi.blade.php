@@ -76,10 +76,10 @@
                                 </p>
                             </div>
                             <span class="px-3 py-1 text-xs rounded-sm font-cinzel tracking-wider uppercase shrink-0 ml-3
-                                        {{ $abs->status == 'hadir' ? 'badge-hadir' : '' }}
-                                        {{ $abs->status == 'telat' ? 'badge-telat' : '' }}
-                                        {{ in_array($abs->status, ['izin', 'sakit']) ? 'badge-izin' : '' }}
-                                        {{ $abs->status == 'alpa' ? 'badge-alpa' : '' }}">
+                                                    {{ $abs->status == 'hadir' ? 'badge-hadir' : '' }}
+                                                    {{ $abs->status == 'telat' ? 'badge-telat' : '' }}
+                                                    {{ in_array($abs->status, ['izin', 'sakit']) ? 'badge-izin' : '' }}
+                                                    {{ $abs->status == 'alpa' ? 'badge-alpa' : '' }}">
                                 {{ $abs->status }}
                             </span>
                         </div>
@@ -146,17 +146,66 @@
             });
 
             function downloadQrCode() {
-                const qrImg = document.querySelector("#qrcode-box img");
-                const qrCanvas = document.querySelector("#qrcode-box canvas");
-                let dataUrl = qrImg?.src || qrCanvas?.toDataURL("image/png") || "";
-                if (dataUrl) {
-                    const link = document.createElement("a");
-                    link.href = dataUrl;
-                    link.download = "QR-Presensi-{{ $peserta->nim }}.png";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                const qrBox = document.getElementById('qrcode-box');
+
+                // Cari elemen canvas atau img di dalam qrcode-box
+                const sourceCanvas = qrBox.querySelector('canvas');
+                const sourceImg = qrBox.querySelector('img');
+
+                if (!sourceCanvas && !sourceImg) {
+                    alert('QR Code belum siap untuk diunduh.');
+                    return;
                 }
+
+                // Buat canvas baru untuk proses rendering background putih + margin
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Margin putih di sekeliling QR Code (Quiet Zone)
+                const margin = 15;
+
+                let qrWidth = 300;
+                let qrHeight = 300;
+
+                if (sourceCanvas) {
+                    qrWidth = sourceCanvas.width;
+                    qrHeight = sourceCanvas.height;
+                } else if (sourceImg) {
+                    qrWidth = sourceImg.naturalWidth || 300;
+                    qrHeight = sourceImg.naturalHeight || 300;
+                }
+
+                // Set ukuran canvas baru = ukuran QR + margin kiri, kanan, atas, bawah
+                canvas.width = qrWidth + (margin * 2);
+                canvas.height = qrHeight + (margin * 2);
+
+                // 1. Cat seluruh background canvas dengan warna PUTIH PADAT
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 2. Gambar QR Code tepat di tengah-tengah background putih
+                if (sourceCanvas) {
+                    ctx.drawImage(sourceCanvas, margin, margin);
+                    executeDownload(canvas);
+                } else if (sourceImg) {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = function () {
+                        ctx.drawImage(img, margin, margin);
+                        executeDownload(canvas);
+                    };
+                    img.src = sourceImg.src;
+                }
+            }
+
+            // Helper untuk mentrigger download file PNG
+            function executeDownload(canvas) {
+                const link = document.createElement('a');
+                link.download = 'QR-Presensi-{{ $peserta->nim }}.png';
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
         @endif
     </script>

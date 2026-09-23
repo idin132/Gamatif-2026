@@ -17,7 +17,7 @@ class ListMahasiswaBarus extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-                
+
             Actions\Action::make('export_excel')
                 ->label('Export Data Maba')
                 ->icon('heroicon-o-arrow-down-tray')
@@ -70,6 +70,9 @@ class ListMahasiswaBarus extends ListRecords
 
                         $query->chunk(200, function ($mabas) use ($handle) {
                             foreach ($mabas as $maba) {
+                                $rawAlamat = $maba->alamat_lengkap ?? $maba->alamat ?? '-';
+                                $alamatClean = preg_replace('/\s+/', ' ', trim($rawAlamat));
+
                                 fputcsv($handle, [
                                     "'" . $maba->nim,
                                     $maba->nama_lengkap,
@@ -77,7 +80,7 @@ class ListMahasiswaBarus extends ListRecords
                                     $maba->tanggal_lahir ? date('d-m-Y', strtotime($maba->tanggal_lahir)) : '-',
                                     $maba->email,
                                     "'" . $maba->nomor_whatsapp,
-                                    $maba->alamat_lengkap ?? $maba->alamat ?? '-',
+                                    $alamatClean,
                                     $maba->kelompok?->nama_kelompok ?? 'Belum ada',
                                     $maba->status == 1 ? 'Sudah di-ACC' : 'Menunggu ACC',
                                     $maba->created_at ? $maba->created_at->format('d-m-Y H:i') : '-',
