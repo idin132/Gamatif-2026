@@ -303,6 +303,7 @@
                 @auth('peserta')
                     <a href="{{ route('peserta.dashboard') }}"
                        class="nav-link {{ request()->routeIs('peserta.dashboard') ? '!text-gold-400' : '' }}">Dashboard</a>
+                    <a href="{{ route('peserta.voting_ketua_angkatan') }}" class="nav-link {{ request()->routeIs('peserta.voting_ketua_angkatan') ? '!text-gold-400' : '' }}">Voting</a>
                     <a href="{{ route('menfess') }}" class="nav-link">Gamafess</a>
                 @endauth
             </nav>
@@ -346,6 +347,9 @@
                         </a>
                         <a href="{{ route('peserta.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition">
                             Dashboard
+                        </a>
+                        <a href="{{ route('peserta.voting_ketua_angkatan') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition">
+                            Voting Ketua Angkatan
                         </a>
                         <a href="{{ route('landing') }}#menfess" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition">
                             Gamafess

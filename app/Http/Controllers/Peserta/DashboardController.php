@@ -13,6 +13,7 @@ use App\Models\Menfess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\KetuaAngkatan;
+use App\Models\KetuaAngkatanVote;
 use App\Models\KritikSaran;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Hash;
@@ -153,9 +154,48 @@ class DashboardController extends Controller
         return view('peserta.profil', compact('peserta', 'pengaturan', 'sosmed'));
     }
 
-    public function updateProfil(Request $request)
+    public function votingKetuaAngkatan()
     {
         $peserta = Auth::guard('peserta')->user();
+        $pengaturan = PengaturanWeb::first();
+        $sosmed = SosialMedia::all();
+
+        $calonKetua = KetuaAngkatan::with(['kelompok', 'votes'])
+            ->withCount('votes')
+            ->orderBy('votes_count', 'desc')
+            ->get();
+
+        $vote = KetuaAngkatanVote::where('mahasiswa_baru_id', $peserta->id)->first();
+
+        return view('peserta.ketua-angkatan-vote', compact(
+            'peserta',
+            'pengaturan',
+            'sosmed',
+            'calonKetua',
+            'vote'
+        ));
+    }
+
+    public function storeVotingKetuaAngkatan(KetuaAngkatan $ketuaAngkatan)
+    {
+        $peserta = Auth::guard('peserta')->user();
+
+        $existingVote = KetuaAngkatanVote::where('mahasiswa_baru_id', $peserta->id)->first();
+
+        if ($existingVote) {
+            return back()->with('error', 'Anda sudah melakukan voting untuk ketua angkatan.');
+        }
+
+        KetuaAngkatanVote::create([
+            'mahasiswa_baru_id' => $peserta->id,
+            'ketua_angkatan_id' => $ketuaAngkatan->id,
+        ]);
+
+        return back()->with('success', 'Voting berhasil disimpan.');
+    }
+
+    public function updateProfil(Request $request)
+    {        $peserta = Auth::guard('peserta')->user();
 
         $validated = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],

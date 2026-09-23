@@ -3,9 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\KetuaAngkatanResource\Pages;
+use App\Models\DataMahasiswa;
 use App\Models\KetuaAngkatan;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -21,13 +23,42 @@ class KetuaAngkatanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nim')->required()->maxLength(255),
-                Forms\Components\TextInput::make('nama')->required()->maxLength(255),
+                Forms\Components\Select::make('nim')
+                    ->label('Mahasiswa')
+                    ->options(fn () => DataMahasiswa::query()
+                        ->orderBy('nama')
+                        ->get()
+                        ->mapWithKeys(fn (DataMahasiswa $mahasiswa) => [
+                            $mahasiswa->nim => "{$mahasiswa->nama} ({$mahasiswa->nim})",
+                        ]))
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->live()
+                    ->afterStateUpdated(function (?string $state, Set $set): void {
+                        $mahasiswa = DataMahasiswa::query()
+                            ->where('nim', $state)
+                            ->first();
+
+                        $set('nama', $mahasiswa?->nama);
+                        $set('kelompok_id', $mahasiswa?->kelompok_id);
+                    }),
+                Forms\Components\TextInput::make('nama')
+                    ->label('Nama Lengkap')
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
                 Forms\Components\TextInput::make('kelas')->required()->maxLength(255),
+                Forms\Components\Select::make('kelompok_id')
+                    ->label('House')
+                    ->relationship('kelompok', 'nama_kelompok')
+                    ->disabled()
+                    ->dehydrated(),
                 Forms\Components\FileUpload::make('foto')
                     ->image()
                     ->directory('ketua_angkatan')
-                    ->required(),
+                    ->nullable(),
                 Forms\Components\Textarea::make('visi')->required()->columnSpanFull(),
                 Forms\Components\Textarea::make('misi')->required()->columnSpanFull(),
             ]);
@@ -41,6 +72,8 @@ class KetuaAngkatanResource extends Resource
                 Tables\Columns\TextColumn::make('nim')->searchable(),
                 Tables\Columns\TextColumn::make('nama')->searchable(),
                 Tables\Columns\TextColumn::make('kelas'),
+                Tables\Columns\TextColumn::make('kelompok.nama_kelompok')->label('House')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('votes_count')->label('Suara')->counts('votes'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
